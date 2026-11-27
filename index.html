@@ -707,6 +707,7 @@ function audio(){
     if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
     if (ac.state === 'suspended') ac.resume();
   } catch (_) { ac = null; }
+  if (ac) loadJubel();
   return ac;
 }
 const G4 = 67, A4 = 69, B4 = 71, C5 = 72, D5 = 74, E5 = 76, F5 = 77, G5 = 79;
@@ -766,37 +767,33 @@ function playSong(){
 }
 $('song').addEventListener('click', () => songOn ? stopSong() : playSong());
 
-/* Jubel nach dem Auspusten: Klatschen und „Wooo“-Rufe, alles synthetisch */
-function cheer(c, dest){
-  const nb = c.__nb || (c.__nb = (() => {
-    const b = c.createBuffer(1, c.sampleRate * 2, c.sampleRate), d = b.getChannelData(0);
-    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    return b;
-  })());
-  const t0 = c.currentTime + .05, out = c.createGain(); out.gain.value = .9; out.connect(dest);
-  // Klatschen: viele kurze Rauschimpulse
-  for (let i = 0; i < 80; i++) {
-    const at = t0 + .15 + Math.random() * 3 * Math.random() ** .3, src = c.createBufferSource(); src.buffer = nb;
-    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1100 + Math.random() * 1500; bp.Q.value = .9;
-    const g = c.createGain(), v = .35 + Math.random() * .35;
-    g.gain.setValueAtTime(v, at); g.gain.exponentialRampToValueAtTime(.001, at + .06);
-    src.connect(bp); bp.connect(g); g.connect(out); src.start(at, Math.random() * 1.5, .08);
-  }
-  // „Wooo“-Rufe: gleitende Stimmen mit Vibrato durch einen Vokal-Filter
-  for (let i = 0; i < 10; i++) {
-    const at = t0 + Math.random() * .8, base = 420 + Math.random() * 360, dur = 1 + Math.random() * .8;
-    const o = c.createOscillator(); o.type = 'sawtooth';
-    o.frequency.setValueAtTime(base * .8, at); o.frequency.exponentialRampToValueAtTime(base * 1.5, at + .35); o.frequency.exponentialRampToValueAtTime(base * 1.2, at + dur);
-    const vib = c.createOscillator(), vg = c.createGain(); vib.frequency.value = 5 + Math.random() * 2; vg.gain.value = base * .03; vib.connect(vg); vg.connect(o.frequency);
-    const f1 = c.createBiquadFilter(); f1.type = 'bandpass'; f1.frequency.value = 1000 + Math.random() * 500; f1.Q.value = 3;
-    const g = c.createGain(); g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(.2, at + .12); g.gain.linearRampToValueAtTime(.13, at + dur * .7); g.gain.linearRampToValueAtTime(0, at + dur);
-    o.connect(f1); f1.connect(g); g.connect(out); o.start(at); vib.start(at); o.stop(at + dur + .05); vib.stop(at + dur + .05);
-  }
+/* Jubel nach dem Auspusten: Aufnahme jubel.mp3 (liegt neben der Seite) */
+let jubelBuf = null, jubelLoad = null, jubelSrc = null;
+function loadJubel(){
+  if (jubelBuf || jubelLoad || !ac) return jubelLoad;
+  jubelLoad = fetch('jubel.mp3').then(r => r.ok ? r.arrayBuffer() : Promise.reject())
+    .then(b => ac.decodeAudioData(b)).then(buf => (jubelBuf = buf))
+    .catch(() => { jubelLoad = null; return null; });
+  return jubelLoad;
+}
+function stopJubel(){
+  if (jubelSrc) { try { jubelSrc.stop(); } catch (_) {} }
+  jubelSrc = null;
+}
+function playJubel(){
+  if (!jubelBuf) return;
+  stopJubel();
+  jubelSrc = ac.createBufferSource(); jubelSrc.buffer = jubelBuf;
+  const g = ac.createGain(); g.gain.value = .9;
+  jubelSrc.connect(g); g.connect(ac.destination);
+  jubelSrc.onended = () => { jubelSrc = null; };
+  jubelSrc.start();
 }
 function jubel(){
   if (!audio()) return;
-  if (ac.state === 'running') cheer(ac, ac.destination);
-  else ac.resume().then(() => cheer(ac, ac.destination)).catch(() => {});
+  const go = () => jubelBuf ? playJubel() : (loadJubel() || Promise.resolve()).then(() => playJubel());
+  if (ac.state === 'running') go();
+  else ac.resume().then(go).catch(() => {});
 }
 // Ständchen startet beim Laden. Handys sperren Ton bis zur ersten Berührung:
 // dann startet es beim Loslassen des ersten Tippens (erst dann gibt der Browser den Ton frei).
@@ -859,7 +856,7 @@ hold.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter')
 hold.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') stop(); });
 hold.addEventListener('blur', stop);
 $('relight').addEventListener('click', () => {
-  stopSong();
+  stopSong(); stopJubel();
   done = false; held = 0; holding = false; hold.disabled = false; $('wish').textContent = '';
   for (const c of C) { c.lit = true; c.hp = 1; c.relight = 0; c.r = .3 + Math.random() * .75; }
   setBtn();

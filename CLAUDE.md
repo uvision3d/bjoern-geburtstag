@@ -23,4 +23,5 @@ Projekt: Geburtstags-Webapp für Björn (57). Alles steckt in `index.html` (HTML
 - `prefers-reduced-motion` schaltet Konfetti ab.
 - `localStorage` nur in try/catch (Spiel-Rekord).
 - Ständchen startet beim Laden (auf Wunsch); blockiert der Browser den Ton, beim ersten Tippen.
+- Jubel nach dem Auspusten ist die Aufnahme `jubel.mp3` (vom Nutzer); den früheren synthetischen Jubel nicht wieder einbauen.
 - Auspusten auch per Mikrofon (auf Wunsch), mit kleinem Hinweis unter den Knöpfen. Schwellen `MIC_LOW`/`MIC_RMS`.
