@@ -40,6 +40,7 @@ button:hover{transform:translateY(-2px)}
 button:focus-visible{outline:3px solid #a2d2ff;outline-offset:3px}
 .cakebox{position:relative;aspect-ratio:400/370;width:100%}
 .cakebox svg,.cakebox canvas{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.sticker{position:absolute;top:-2%;right:0;width:26%;height:auto;aspect-ratio:1;border-radius:50%;object-fit:cover;border:5px solid #fffdf8;box-shadow:0 6px 0 rgba(91,74,110,.22),0 0 0 2px #5b4a6e;transform:rotate(8deg);z-index:2}
 #hold{position:relative;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;min-width:13.5em;max-width:100%}
 #hold::before{content:"";position:absolute;inset:0;width:calc(var(--p,0)*100%);background:#b9548a;z-index:0}
 #hold span{position:relative;z-index:1}
@@ -144,6 +145,7 @@ footer{padding:28px max(5vw,16px);font-size:14px;text-align:center;text-wrap:bal
         <path d="M100 175 q20 24 40 0 q20 24 40 0 q20 24 40 0 q20 24 40 0 q20 24 40 0 v-4 a14 14 0 0 0 -14 -11 h-172 a14 14 0 0 0 -14 11z" fill="#fff1a8" stroke="#5b4a6e" stroke-width="3"/>
         <ellipse cx="200" cy="160" rx="100" ry="15" fill="#fff1a8" stroke="#5b4a6e" stroke-width="3"/>
       </svg>
+      <img class="sticker" src="bjoern.jpg" alt="Björn" width="360" height="360">
       <canvas id="candles" role="img" aria-label="Geburtstagstorte mit 57 brennenden Kerzen"></canvas>
     </div>
   </div>
