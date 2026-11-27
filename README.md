@@ -8,6 +8,7 @@ Einfach `index.html` im Browser öffnen. Für die Neigungssensoren am Handy muss
 
 ## Funktionen
 
+- **Startbildschirm** „Tippen zum Feiern 🎉“ mit der Karikatur: Das eine Tippen gibt am Handy den Ton frei, damit das Ständchen sofort startet.
 - **Torte mit 57 Kerzen** (Canvas): Flammen sind gedämpfte Federn, biegen sich im „Wind“ und gehen nach und nach aus. Jede Kerze hat ihre eigene Widerstandskraft.
 - **Auspusten**: Den Knopf „Halten zum Auspusten“ 3 Sekunden gedrückt halten (Maus, Finger oder Leertaste) oder nach Tippen auf „Mikrofon einschalten“ 1 Sekunde echt ins Mikrofon pusten. Wer zu früh loslässt, sieht die erloschenen Kerzen wieder angehen (Trickkerzen).
 - **Neigung**: Flammen zeigen immer nach oben (`deviceorientation`) und wackeln beim Schütteln (`devicemotion`). Auf iOS wird beim ersten Drücken um Erlaubnis gefragt. In der Claude-Artefakt-Ansicht ist das gesperrt.

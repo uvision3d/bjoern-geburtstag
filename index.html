@@ -108,10 +108,27 @@ footer{padding:28px max(5vw,16px);font-size:14px;text-align:center;text-wrap:bal
   .name{order:2}.age{order:3}.cakebox{order:4;max-width:420px;margin:8px auto 4px}
   .btns{order:5}.mhint{order:5;text-align:center}.lyric{order:7}.hero .btns>button{flex:1 1 auto;white-space:nowrap;font-size:15px;padding-inline:16px;min-width:0}.meter{order:6}.wish{order:7}.lead{order:8}
   .tl li{grid-template-columns:1fr;gap:2px}.tl li.me{margin:6px 0}}
-@media(prefers-reduced-motion:reduce){button{transition:none}}
+/* Startbildschirm: ein Tippen startet die Feier mit Musik */
+#splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:24px 16px;background:radial-gradient(circle at 50% 42%,#fff6cc 0,#ffe5d9 62%);text-align:center;transition:opacity .45s,visibility .45s}
+#splash.out{opacity:0;visibility:hidden}
+#splash .inner{display:grid;justify-items:center;gap:14px;max-width:420px}
+#splash .face{width:min(46vw,190px);height:auto;animation:wob 2.4s ease-in-out infinite}
+#splash .big{font-family:Shrikhand,serif;font-size:clamp(40px,11vw,72px);line-height:1.05;color:var(--plum);margin:0;text-wrap:balance}
+#splash button{font-size:19px;min-height:56px;padding:12px 30px;box-shadow:0 6px 0 #d8c3ee}
+#splash p{margin:0;font-size:15px;color:var(--muted)}
+@keyframes wob{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) translateY(-4px)}}
+@media(prefers-reduced-motion:reduce){button{transition:none}#splash .face{animation:none}#splash{transition:none}}
 </style>
 </head>
 <body>
+<div id="splash" role="dialog" aria-modal="true" aria-labelledby="splashT">
+  <div class="inner">
+    <img class="face" src="bjoern-karikatur.webp" alt="" width="440" height="612">
+    <h1 class="big" id="splashT">Björn wird 57!</h1>
+    <button id="party">Tippen zum Feiern 🎉</button>
+    <p>mit Ständchen – Ton an 🎵</p>
+  </div>
+</div>
 <canvas id="fx"></canvas>
 
 <header class="band">
@@ -843,6 +860,17 @@ function micBlowing(now){
   if (low > MIC_LOW && Math.sqrt(s / mic.w.length) > MIC_RMS) lastBlow = now;
   return now - lastBlow < 400;
 }
+
+/* Startbildschirm: das Tippen gibt den Ton frei, das Ständchen startet über autoSong() */
+const splash = $('splash');
+document.documentElement.style.overflow = 'hidden';
+$('party').addEventListener('click', () => {
+  askMotion(); audio();
+  document.documentElement.style.overflow = '';
+  splash.classList.add('out');
+  if (!reduce) { burst(innerWidth * .3, innerHeight * .75, 90); burst(innerWidth * .7, innerHeight * .75, 90); }
+  setTimeout(() => splash.remove(), reduce ? 0 : 500);
+});
 
 let last = performance.now();
 function loop(now){
