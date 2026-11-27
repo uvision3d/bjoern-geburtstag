@@ -775,7 +775,7 @@ function cheer(c, dest){
   })());
   const t0 = c.currentTime + .05, out = c.createGain(); out.gain.value = .9; out.connect(dest);
   // Menge: gefiltertes Rauschen, schwillt an, wogt und klingt aus
-  for (const [f, q, v] of [[900, .8, .3], [1800, 1.2, .22], [3200, 1.5, .1]]) {
+  for (const [f, q, v] of [[1300, .8, .26], [2600, 1.2, .22], [4200, 1.5, .12]]) {
     const src = c.createBufferSource(); src.buffer = nb; src.loop = true; src.playbackRate.value = .9 + Math.random() * .2;
     const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
     const g = c.createGain(); g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(v, t0 + .25);
@@ -792,13 +792,13 @@ function cheer(c, dest){
     src.connect(bp); bp.connect(g); g.connect(out); src.start(at, Math.random() * 1.5, .08);
   }
   // „Wooo“-Rufe: gleitende Stimmen mit Vibrato durch einen Vokal-Filter
-  for (let i = 0; i < 6; i++) {
-    const at = t0 + Math.random() * .6, base = 220 + Math.random() * 260, dur = 1 + Math.random() * .8;
+  for (let i = 0; i < 8; i++) {
+    const at = t0 + Math.random() * .6, base = 420 + Math.random() * 360, dur = 1 + Math.random() * .8;
     const o = c.createOscillator(); o.type = 'sawtooth';
     o.frequency.setValueAtTime(base * .8, at); o.frequency.exponentialRampToValueAtTime(base * 1.5, at + .35); o.frequency.exponentialRampToValueAtTime(base * 1.2, at + dur);
     const vib = c.createOscillator(), vg = c.createGain(); vib.frequency.value = 5 + Math.random() * 2; vg.gain.value = base * .03; vib.connect(vg); vg.connect(o.frequency);
-    const f1 = c.createBiquadFilter(); f1.type = 'bandpass'; f1.frequency.value = 600 + Math.random() * 300; f1.Q.value = 3;
-    const g = c.createGain(); g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(.22, at + .12); g.gain.linearRampToValueAtTime(.14, at + dur * .7); g.gain.linearRampToValueAtTime(0, at + dur);
+    const f1 = c.createBiquadFilter(); f1.type = 'bandpass'; f1.frequency.value = 1000 + Math.random() * 500; f1.Q.value = 3;
+    const g = c.createGain(); g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(.2, at + .12); g.gain.linearRampToValueAtTime(.13, at + dur * .7); g.gain.linearRampToValueAtTime(0, at + dur);
     o.connect(f1); f1.connect(g); g.connect(out); o.start(at); vib.start(at); o.stop(at + dur + .05); vib.stop(at + dur + .05);
   }
 }
