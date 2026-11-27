@@ -119,7 +119,7 @@ footer{padding:28px max(5vw,16px);font-size:14px;text-align:center;text-wrap:bal
     <div>
       <h1 class="name">Björn</h1>
       <h2 class="age" id="ageLine">wird heute 57!</h2>
-      <p class="lead">Geboren an einem Donnerstag im Jahr der Mondlandung. Auf der Torte brennen 57 Kerzen – halte den Knopf 5 Sekunden gedrückt und puste sie alle aus. Wer zu früh loslässt, erlebt Trickkerzen. Danach gibt’s ein Ständchen.</p>
+      <p class="lead">Geboren an einem Donnerstag im Jahr der Mondlandung. Auf der Torte brennen 57 Kerzen – halte den Knopf 3 Sekunden gedrückt und puste sie alle aus. Wer zu früh loslässt, erlebt Trickkerzen. Danach gibt’s ein Ständchen.</p>
       <div class="btns">
         <button id="hold" aria-describedby="wish"><span id="holdTxt">Halten zum Auspusten</span></button>
         <button class="ghost" id="relight">Neu anzünden</button>
@@ -562,7 +562,9 @@ C.forEach((c, i) => Object.assign(c, {
 }));
 
 let smoke = [], W = 0, holding = false, held = 0, done = false, t = 0, S = 1;
-const HOLD = 5000;
+// Knopf: 3 Sekunden halten, echtes Pusten ins Mikrofon: 1 Sekunde
+const HOLD_BTN = 3000, HOLD_MIC = 1000;
+let HOLD = HOLD_BTN;
 /* Lage des Handys: Flammen zeigen immer nach oben, Schütteln bringt sie zum Wackeln */
 let up = 0, upTarget = 0, shake = 0;
 const deg = Math.PI / 180;
@@ -766,8 +768,9 @@ function setBtn(){
   else if (holding) holdTxt.innerHTML = `Pusten … <span class="count">${((HOLD - held) / 1000).toFixed(1).replace('.', ',')}</span> s`;
   else holdTxt.textContent = 'Halten zum Auspusten';
 }
-function start(e){
+function start(e, fromMic){
   if (done) return;
+  HOLD = fromMic ? HOLD_MIC : HOLD_BTN;
   if (e) e.preventDefault();
   askMotion(); audio();
   holding = true; $('wish').textContent = '';
@@ -780,7 +783,8 @@ function stop(){
     const out = C.filter(c => !c.lit).length;
     held = 0;
     for (const c of C) if (!c.lit) c.relight = .3 + Math.random() * 1.4;
-    $('wish').textContent = out ? `${out} Kerzen waren schon aus – aber es sind Trickkerzen! Halte volle 5 Sekunden.` : 'Länger pusten – volle 5 Sekunden halten!';
+    const need = HOLD === HOLD_MIC ? 'Puste eine volle Sekunde.' : 'Halte volle 3 Sekunden.';
+    $('wish').textContent = out ? `${out} ${out === 1 ? 'Kerze war' : 'Kerzen waren'} schon aus – aber es sind Trickkerzen! ${need}` : (HOLD === HOLD_MIC ? 'Länger pusten – eine volle Sekunde!' : 'Länger drücken – volle 3 Sekunden!');
   }
   setBtn();
 }
@@ -836,7 +840,7 @@ let last = performance.now();
 function loop(now){
   const dt = Math.min(.05, (now - last) / 1000); last = now;
   const blow = micBlowing(now);
-  if (blow && !holding && !done) { start(); micHold = true; }
+  if (blow && !holding && !done) { start(null, true); micHold = true; }
   else if (micHold && !blow) { micHold = false; stop(); }
   if (holding && !done) { held += dt * 1000; if (held >= HOLD) { held = HOLD; finish(); } }
   physics(dt); draw(); setBtn();
