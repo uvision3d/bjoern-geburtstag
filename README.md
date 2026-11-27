@@ -1,4 +1,4 @@
-# Björn wird 57 – Geburtstags-Webapp
+# Geburtstags-Webapp
 
 Eine einzelne, eigenständige Webseite (`index.html`) zu Björns 57. Geburtstag (geboren am Donnerstag, 27.11.1969). Kein Build-Schritt, keine Abhängigkeiten außer Google Fonts (Shrikhand, DM Sans).
 
