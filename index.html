@@ -136,7 +136,7 @@ footer{padding:28px max(5vw,16px);font-size:14px;text-align:center;text-wrap:bal
     <div>
       <h1 class="name">Björn</h1>
       <h2 class="age" id="ageLine">wird heute 57!</h2>
-      <p class="lead">Geboren an einem Donnerstag im Jahr der Mondlandung. Auf der Torte brennen 57 Kerzen – halte den Knopf 3 Sekunden gedrückt und puste sie alle aus. Wer zu früh loslässt, erlebt Trickkerzen. Danach gibt’s ein Ständchen.</p>
+      <p class="lead">Geboren an einem Donnerstag im Jahr der Mondlandung. Auf der Torte brennen 57 Kerzen – halte den Knopf 3 Sekunden gedrückt und puste sie alle aus. Wer zu früh loslässt, erlebt Trickkerzen. Danach wird gejubelt!</p>
       <div class="btns">
         <button id="hold" aria-describedby="wish"><span id="holdTxt">Halten zum Auspusten</span></button>
         <button class="ghost" id="relight">Neu anzünden</button>
@@ -747,11 +747,10 @@ function stopSong(){
   songNodes.forEach(n => { try { n.stop(); } catch (_) {} }); songNodes = [];
   showLyric(-1); $('song').textContent = 'Ständchen spielen'; $('song').setAttribute('aria-pressed', 'false');
 }
-let songStarted = false, songT0 = -1e9;
+let songStarted = false;
 function playSong(){
   if (!audio()) return;
   if (ac.state === 'running') songStarted = true;
-  songT0 = performance.now();
   stopSong(); songOn = true;
   $('song').textContent = 'Ständchen stoppen'; $('song').setAttribute('aria-pressed', 'true');
   const beat = .52, t0 = ac.currentTime + .15;
@@ -766,6 +765,48 @@ function playSong(){
   songTimers.push(setTimeout(stopSong, (b * beat + 1.2) * 1000));
 }
 $('song').addEventListener('click', () => songOn ? stopSong() : playSong());
+
+/* Jubel nach dem Auspusten: Menge, Klatschen und „Wooo“-Rufe, alles synthetisch */
+function cheer(c, dest){
+  const nb = c.__nb || (c.__nb = (() => {
+    const b = c.createBuffer(1, c.sampleRate * 2, c.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return b;
+  })());
+  const t0 = c.currentTime + .05, out = c.createGain(); out.gain.value = .9; out.connect(dest);
+  // Menge: gefiltertes Rauschen, schwillt an, wogt und klingt aus
+  for (const [f, q, v] of [[900, .8, .3], [1800, 1.2, .22], [3200, 1.5, .1]]) {
+    const src = c.createBufferSource(); src.buffer = nb; src.loop = true; src.playbackRate.value = .9 + Math.random() * .2;
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
+    const g = c.createGain(); g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(v, t0 + .25);
+    for (let k = 1; k < 12; k++) g.gain.linearRampToValueAtTime(v * (.6 + Math.random() * .6), t0 + .25 + k * .22);
+    g.gain.linearRampToValueAtTime(0, t0 + 3.6);
+    src.connect(bp); bp.connect(g); g.connect(out); src.start(t0); src.stop(t0 + 3.7);
+  }
+  // Klatschen: viele kurze Rauschimpulse
+  for (let i = 0; i < 80; i++) {
+    const at = t0 + .15 + Math.random() * 3 * Math.random() ** .3, src = c.createBufferSource(); src.buffer = nb;
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1100 + Math.random() * 1500; bp.Q.value = .9;
+    const g = c.createGain(), v = .35 + Math.random() * .35;
+    g.gain.setValueAtTime(v, at); g.gain.exponentialRampToValueAtTime(.001, at + .06);
+    src.connect(bp); bp.connect(g); g.connect(out); src.start(at, Math.random() * 1.5, .08);
+  }
+  // „Wooo“-Rufe: gleitende Stimmen mit Vibrato durch einen Vokal-Filter
+  for (let i = 0; i < 6; i++) {
+    const at = t0 + Math.random() * .6, base = 220 + Math.random() * 260, dur = 1 + Math.random() * .8;
+    const o = c.createOscillator(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(base * .8, at); o.frequency.exponentialRampToValueAtTime(base * 1.5, at + .35); o.frequency.exponentialRampToValueAtTime(base * 1.2, at + dur);
+    const vib = c.createOscillator(), vg = c.createGain(); vib.frequency.value = 5 + Math.random() * 2; vg.gain.value = base * .03; vib.connect(vg); vg.connect(o.frequency);
+    const f1 = c.createBiquadFilter(); f1.type = 'bandpass'; f1.frequency.value = 600 + Math.random() * 300; f1.Q.value = 3;
+    const g = c.createGain(); g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(.22, at + .12); g.gain.linearRampToValueAtTime(.14, at + dur * .7); g.gain.linearRampToValueAtTime(0, at + dur);
+    o.connect(f1); f1.connect(g); g.connect(out); o.start(at); vib.start(at); o.stop(at + dur + .05); vib.stop(at + dur + .05);
+  }
+}
+function jubel(){
+  if (!audio()) return;
+  if (ac.state === 'running') cheer(ac, ac.destination);
+  else ac.resume().then(() => cheer(ac, ac.destination)).catch(() => {});
+}
 // Ständchen startet beim Laden. Handys sperren Ton bis zur ersten Berührung:
 // dann startet es beim Loslassen des ersten Tippens (erst dann gibt der Browser den Ton frei).
 const UNLOCK = ['pointerup', 'touchend', 'click', 'keydown'];
@@ -816,8 +857,7 @@ function finish(){
   done = true; holding = false;
   for (const c of C) if (c.lit) extinguish(c);
   hold.disabled = true;
-  // nach dem Auspusten (neu) starten, außer es hat gerade eben erst angefangen
-  setTimeout(() => { if (!(songOn && performance.now() - songT0 < 2500)) playSong(); }, 700);
+  jubel();
   $('wish').textContent = cheers[Math.floor(Math.random() * cheers.length)];
   if (!reduce) { burst(innerWidth * .25, innerHeight * .9, 140); burst(innerWidth * .75, innerHeight * .9, 140); }
 }
