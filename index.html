@@ -766,7 +766,7 @@ function playSong(){
 }
 $('song').addEventListener('click', () => songOn ? stopSong() : playSong());
 
-/* Jubel nach dem Auspusten: Menge, Klatschen und „Wooo“-Rufe, alles synthetisch */
+/* Jubel nach dem Auspusten: Klatschen und „Wooo“-Rufe, alles synthetisch */
 function cheer(c, dest){
   const nb = c.__nb || (c.__nb = (() => {
     const b = c.createBuffer(1, c.sampleRate * 2, c.sampleRate), d = b.getChannelData(0);
@@ -774,15 +774,6 @@ function cheer(c, dest){
     return b;
   })());
   const t0 = c.currentTime + .05, out = c.createGain(); out.gain.value = .9; out.connect(dest);
-  // Menge: gefiltertes Rauschen, schwillt an, wogt und klingt aus
-  for (const [f, q, v] of [[1300, .8, .26], [2600, 1.2, .22], [4200, 1.5, .12]]) {
-    const src = c.createBufferSource(); src.buffer = nb; src.loop = true; src.playbackRate.value = .9 + Math.random() * .2;
-    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = f; bp.Q.value = q;
-    const g = c.createGain(); g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(v, t0 + .25);
-    for (let k = 1; k < 12; k++) g.gain.linearRampToValueAtTime(v * (.6 + Math.random() * .6), t0 + .25 + k * .22);
-    g.gain.linearRampToValueAtTime(0, t0 + 3.6);
-    src.connect(bp); bp.connect(g); g.connect(out); src.start(t0); src.stop(t0 + 3.7);
-  }
   // Klatschen: viele kurze Rauschimpulse
   for (let i = 0; i < 80; i++) {
     const at = t0 + .15 + Math.random() * 3 * Math.random() ** .3, src = c.createBufferSource(); src.buffer = nb;
@@ -792,8 +783,8 @@ function cheer(c, dest){
     src.connect(bp); bp.connect(g); g.connect(out); src.start(at, Math.random() * 1.5, .08);
   }
   // „Wooo“-Rufe: gleitende Stimmen mit Vibrato durch einen Vokal-Filter
-  for (let i = 0; i < 8; i++) {
-    const at = t0 + Math.random() * .6, base = 420 + Math.random() * 360, dur = 1 + Math.random() * .8;
+  for (let i = 0; i < 10; i++) {
+    const at = t0 + Math.random() * .8, base = 420 + Math.random() * 360, dur = 1 + Math.random() * .8;
     const o = c.createOscillator(); o.type = 'sawtooth';
     o.frequency.setValueAtTime(base * .8, at); o.frequency.exponentialRampToValueAtTime(base * 1.5, at + .35); o.frequency.exponentialRampToValueAtTime(base * 1.2, at + dur);
     const vib = c.createOscillator(), vg = c.createGain(); vib.frequency.value = 5 + Math.random() * 2; vg.gain.value = base * .03; vib.connect(vg); vg.connect(o.frequency);
