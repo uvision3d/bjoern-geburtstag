@@ -45,6 +45,10 @@ button:focus-visible{outline:3px solid #a2d2ff;outline-offset:3px}
 #hold span{position:relative;z-index:1}
 #hold:disabled{cursor:default;transform:none;opacity:.8}
 .count{font-variant-numeric:tabular-nums}
+.mhint{font-size:14px;margin:10px 0 0;color:var(--muted)}
+button.link{background:none;border:0;padding:0;min-height:0;font-size:inherit;font-weight:700;color:#b9548a;text-decoration:underline;text-underline-offset:3px}
+button.link:hover{transform:none}
+button.link:disabled{text-decoration:none;cursor:default;color:var(--muted)}
 .wish{min-height:1.6em;font-weight:700;font-size:18px;margin-top:14px}
 .lyric{min-height:1.5em;margin:4px 0 0;font-family:Shrikhand,serif;font-size:clamp(20px,2.6vw,26px);color:var(--muted)}
 .lyric b{font-weight:400;color:#b9548a}
@@ -97,9 +101,9 @@ footer{padding:28px max(5vw,16px);font-size:14px;text-align:center;text-wrap:bal
 @media(max-width:860px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.grid{grid-template-columns:1fr}}
 @media(max-width:600px){.hero{display:flex;flex-direction:column;align-items:stretch;gap:0}.hero>div:first-child{display:contents}
-  .name,.age,.btns,.meter,.wish,.lead{position:relative;z-index:1}
+  .name,.age,.btns,.mhint,.meter,.wish,.lead{position:relative;z-index:1}
   .name{order:2}.age{order:3}.cakebox{order:4;max-width:420px;margin:8px auto 4px}
-  .btns{order:5}.lyric{order:7}.hero .btns>button{flex:1 1 auto;white-space:nowrap;font-size:15px;padding-inline:16px;min-width:0}.meter{order:6}.wish{order:7}.lead{order:8}
+  .btns{order:5}.mhint{order:5;text-align:center}.lyric{order:7}.hero .btns>button{flex:1 1 auto;white-space:nowrap;font-size:15px;padding-inline:16px;min-width:0}.meter{order:6}.wish{order:7}.lead{order:8}
   .tl li{grid-template-columns:1fr;gap:2px}.tl li.me{margin:6px 0}}
 @media(prefers-reduced-motion:reduce){button{transition:none}}
 </style>
@@ -118,6 +122,7 @@ footer{padding:28px max(5vw,16px);font-size:14px;text-align:center;text-wrap:bal
         <button class="ghost" id="relight">Neu anzünden</button>
         <button class="ghost" id="song" aria-pressed="false">Ständchen spielen</button>
       </div>
+      <p class="mhint">🎤 Tipp: Du kannst auch echt pusten – <button class="link" id="mic">Mikrofon einschalten</button></p>
       <p class="wish" id="wish" aria-live="polite"></p>
       <p class="lyric" id="lyric" aria-hidden="true"></p>
     </div>
@@ -735,6 +740,17 @@ function playSong(){
   songTimers.push(setTimeout(stopSong, (b * beat + 1.2) * 1000));
 }
 $('song').addEventListener('click', () => songOn ? stopSong() : playSong());
+// Ständchen startet beim Laden. Blockiert der Browser den Ton, startet es beim ersten Tippen.
+function autoSong(){
+  if (audio() && ac.state === 'running') { playSong(); return; }
+  const go = e => {
+    removeEventListener('pointerdown', go, true); removeEventListener('keydown', go, true);
+    if (e.target.closest && e.target.closest('#song')) return;
+    if (!songOn) playSong();
+  };
+  addEventListener('pointerdown', go, true); addEventListener('keydown', go, true);
+}
+autoSong();
 
 
 const hold = $('hold'), holdTxt = $('holdTxt');
@@ -785,9 +801,39 @@ $('relight').addEventListener('click', () => {
   setBtn();
 });
 
+/* Mikrofon: echtes Pusten zählt wie Gedrückthalten */
+let mic = null, micOn = false, micHold = false, lastBlow = -1e9;
+const MIC_LOW = 150, MIC_RMS = .1;
+async function startMic(){
+  const btn = $('mic');
+  if (micOn) return;
+  try {
+    if (!audio()) throw 0;
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: false, autoGainControl: false } });
+    const src = ac.createMediaStreamSource(stream), an = ac.createAnalyser();
+    an.fftSize = 1024; an.smoothingTimeConstant = .2; src.connect(an);
+    mic = { an, f: new Uint8Array(an.frequencyBinCount), w: new Float32Array(an.fftSize) };
+    micOn = true; btn.textContent = 'Mikrofon ist an – jetzt pusten!'; btn.disabled = true;
+  } catch (_) { btn.textContent = 'Mikrofon nicht verfügbar'; btn.disabled = true; }
+}
+$('mic').addEventListener('click', startMic);
+function micBlowing(now){
+  if (!micOn) return false;
+  mic.an.getByteFrequencyData(mic.f); mic.an.getFloatTimeDomainData(mic.w);
+  // Pusten rauscht vor allem tief (unter ca. 200 Hz) und ist laut
+  const nb = Math.max(2, Math.round(200 / (ac.sampleRate / mic.an.fftSize)));
+  let low = 0; for (let i = 1; i <= nb; i++) low += mic.f[i]; low /= nb;
+  let s = 0; for (const v of mic.w) s += v * v;
+  if (low > MIC_LOW && Math.sqrt(s / mic.w.length) > MIC_RMS) lastBlow = now;
+  return now - lastBlow < 400;
+}
+
 let last = performance.now();
 function loop(now){
   const dt = Math.min(.05, (now - last) / 1000); last = now;
+  const blow = micBlowing(now);
+  if (blow && !holding && !done) { start(); micHold = true; }
+  else if (micHold && !blow) { micHold = false; stop(); }
   if (holding && !done) { held += dt * 1000; if (held >= HOLD) { held = HOLD; finish(); } }
   physics(dt); draw(); setBtn();
   requestAnimationFrame(loop);

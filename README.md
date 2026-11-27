@@ -9,9 +9,9 @@ Einfach `index.html` im Browser öffnen. Für die Neigungssensoren am Handy muss
 ## Funktionen
 
 - **Torte mit 57 Kerzen** (Canvas): Flammen sind gedämpfte Federn, biegen sich im „Wind“ und gehen nach und nach aus. Jede Kerze hat ihre eigene Widerstandskraft.
-- **Auspusten**: Den Knopf „Halten zum Auspusten“ 5 Sekunden gedrückt halten (Maus, Finger oder Leertaste). Wer zu früh loslässt, sieht die erloschenen Kerzen wieder angehen (Trickkerzen).
+- **Auspusten**: Den Knopf „Halten zum Auspusten“ 5 Sekunden gedrückt halten (Maus, Finger oder Leertaste) oder nach Tippen auf „Mikrofon einschalten“ echt ins Mikrofon pusten. Wer zu früh loslässt, sieht die erloschenen Kerzen wieder angehen (Trickkerzen).
 - **Neigung**: Flammen zeigen immer nach oben (`deviceorientation`) und wackeln beim Schütteln (`devicemotion`). Auf iOS wird beim ersten Drücken um Erlaubnis gefragt. In der Claude-Artefakt-Ansicht ist das gesperrt.
-- **Ständchen**: „Happy Birthday“ (gemeinfreie Melodie) per Web Audio als Spieluhr mit Bass und deutschem Mitsingtext. Startet nach dem Auspusten und über den Knopf „Ständchen spielen“, nicht beim Laden.
+- **Ständchen**: „Happy Birthday“ (gemeinfreie Melodie) per Web Audio als Spieluhr mit Bass und deutschem Mitsingtext. Startet beim Laden (blockiert der Browser den Ton, beim ersten Tippen), nach dem Auspusten und über den Knopf „Ständchen spielen“.
 - **Konfetti** nach dem Auspusten.
 - **Lebenszähler** (live): Tage, Stunden, Vollmonde und Herzschläge (geschätzt).
 - **Countdown zur Rente**: Regelaltersrente mit 67, Beginn am 1.12.2036, mit Balken vom 18. Geburtstag bis zur Rente.

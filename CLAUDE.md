@@ -11,9 +11,7 @@ Projekt: Geburtstags-Webapp für Björn (57). Alles steckt in `index.html` (HTML
 ## Bewusst entfernte oder abgelehnte Dinge (nicht wieder einbauen, außer auf Wunsch)
 
 - Zahlenkerzen „5“ und „7“ (ersetzt durch 57 einzelne Kerzen).
-- Auspusten per Mikrofon (der Nutzer hat darauf verzichtet).
 - Sprachausgabe/Stimme mit Glückwünschen.
-- Autostart des Ständchens beim Laden (es spielt nur nach dem Auspusten oder per Knopf).
 - Oberste Zeile „27. November · Alles Gute zum Geburtstag“.
 - Titel „Björn hat heut Geburtstag (wird 57)“ und Countdown zum 60. (zurückgenommen, es gilt „Björn – wird heute 57!“ und der Renten-Countdown).
 
@@ -24,3 +22,5 @@ Projekt: Geburtstags-Webapp für Björn (57). Alles steckt in `index.html` (HTML
 - Konfetti: Canvas `#fx` fixed über der Seite.
 - `prefers-reduced-motion` schaltet Konfetti ab.
 - `localStorage` nur in try/catch (Spiel-Rekord).
+- Ständchen startet beim Laden (auf Wunsch); blockiert der Browser den Ton, beim ersten Tippen.
+- Auspusten auch per Mikrofon (auf Wunsch), mit kleinem Hinweis unter den Knöpfen. Schwellen `MIC_LOW`/`MIC_RMS`.
