@@ -730,8 +730,11 @@ function stopSong(){
   songNodes.forEach(n => { try { n.stop(); } catch (_) {} }); songNodes = [];
   showLyric(-1); $('song').textContent = 'Ständchen spielen'; $('song').setAttribute('aria-pressed', 'false');
 }
+let songStarted = false, songT0 = -1e9;
 function playSong(){
   if (!audio()) return;
+  if (ac.state === 'running') songStarted = true;
+  songT0 = performance.now();
   stopSong(); songOn = true;
   $('song').textContent = 'Ständchen stoppen'; $('song').setAttribute('aria-pressed', 'true');
   const beat = .52, t0 = ac.currentTime + .15;
@@ -746,15 +749,19 @@ function playSong(){
   songTimers.push(setTimeout(stopSong, (b * beat + 1.2) * 1000));
 }
 $('song').addEventListener('click', () => songOn ? stopSong() : playSong());
-// Ständchen startet beim Laden. Blockiert der Browser den Ton, startet es beim ersten Tippen.
+// Ständchen startet beim Laden. Handys sperren Ton bis zur ersten Berührung:
+// dann startet es beim Loslassen des ersten Tippens (erst dann gibt der Browser den Ton frei).
+const UNLOCK = ['pointerup', 'touchend', 'click', 'keydown'];
+UNLOCK.forEach(ev => addEventListener(ev, () => { if (ac && ac.state !== 'running') ac.resume().catch(() => {}); }, true));
 function autoSong(){
   if (audio() && ac.state === 'running') { playSong(); return; }
+  const off = () => UNLOCK.forEach(ev => removeEventListener(ev, go, true));
   const go = e => {
-    removeEventListener('pointerdown', go, true); removeEventListener('keydown', go, true);
-    if (e.target.closest && e.target.closest('#song')) return;
-    if (!songOn) playSong();
+    if (e.target.closest && e.target.closest('#song')) { off(); return; }
+    if (!audio()) return;
+    ac.resume().then(() => { if (ac.state === 'running' && !songStarted) { off(); playSong(); } }).catch(() => {});
   };
-  addEventListener('pointerdown', go, true); addEventListener('keydown', go, true);
+  UNLOCK.forEach(ev => addEventListener(ev, go, true));
 }
 autoSong();
 
@@ -792,7 +799,8 @@ function finish(){
   done = true; holding = false;
   for (const c of C) if (c.lit) extinguish(c);
   hold.disabled = true;
-  setTimeout(playSong, 700);
+  // nach dem Auspusten (neu) starten, außer es hat gerade eben erst angefangen
+  setTimeout(() => { if (!(songOn && performance.now() - songT0 < 2500)) playSong(); }, 700);
   $('wish').textContent = cheers[Math.floor(Math.random() * cheers.length)];
   if (!reduce) { burst(innerWidth * .25, innerHeight * .9, 140); burst(innerWidth * .75, innerHeight * .9, 140); }
 }
