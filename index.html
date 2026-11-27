@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Björn wird 57</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shrikhand&family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: warm, festlich, ein bisschen 1969-Groove – für einen Freund, nicht für ein Meeting
+   IDEA: ein Retro-Partyplakat aus dem Jahr 1969, auf dem man die Kerzen wirklich auspusten kann
+   PICTURE: große Torte mit Zahlenkerzen 5 und 7, flackernde Flammen, Klick pustet sie aus + Konfetti
+   COLOUR and TYPE: Pastell: Pfirsich, Mint, Flieder, Himmelblau; Shrikhand + DM Sans
+   LAYOUT: Plakat-Kopf mit Name und Torte, dann Lebenszähler, 1969-Zeitleiste, Glückwunsch-Generator */
+:root{color-scheme:light;
+  --bg:#ffe5d9;--ink:#3e3150;--sun:#fff1a8;--plum:#4a3a5c;--card:#f3e8ff;--soft:#d8c3ee;
+  --mint:#cdeedd;--muted:#6b5a80;--cake:#fffaf4;--cake2:#ffc8dd}
+:root[data-theme]{color-scheme:light}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "DM Sans",system-ui,sans-serif;overflow-x:clip}
+.band{padding:clamp(28px,4vw,64px) max(5vw,16px)}
+header.band{overflow:hidden}
+p,blockquote,.tl strong{text-wrap:pretty}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2{font-family:Shrikhand,"DM Sans",serif;font-weight:400;line-height:1.05;text-wrap:balance;margin:0}
+h2{font-size:clamp(28px,4vw,42px);margin-bottom:20px}
+h1,h2{text-align:center}
+p{max-width:65ch}
+/* Hero */
+.hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(16px,3vw,48px);align-items:center;max-width:1240px;margin:0 auto}
+.hero>div:first-child{position:relative;z-index:1}
+.name{font-size:clamp(64px,13vw,150px);color:var(--plum)}
+.age{font-size:clamp(26px,3.6vw,40px);margin-top:6px}
+.lead{font-size:17px;margin:18px 0 22px}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+button{font:inherit;font-weight:700;font-size:16px;min-height:44px;padding:10px 20px;border-radius:999px;border:2px solid var(--plum);background:var(--plum);color:#fffaf4;cursor:pointer;transition:transform .15s}
+button.ghost{background:transparent;color:var(--ink);border-color:currentColor}
+button:hover{transform:translateY(-2px)}
+button:focus-visible{outline:3px solid #a2d2ff;outline-offset:3px}
+.cakebox{position:relative;aspect-ratio:400/370;width:100%}
+.cakebox svg,.cakebox canvas{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#hold{position:relative;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;min-width:13.5em;max-width:100%}
+#hold::before{content:"";position:absolute;inset:0;width:calc(var(--p,0)*100%);background:#b9548a;z-index:0}
+#hold span{position:relative;z-index:1}
+#hold:disabled{cursor:default;transform:none;opacity:.8}
+.count{font-variant-numeric:tabular-nums}
+.wish{min-height:1.6em;font-weight:700;font-size:18px;margin-top:14px}
+.lyric{min-height:1.5em;margin:4px 0 0;font-family:Shrikhand,serif;font-size:clamp(20px,2.6vw,26px);color:var(--muted)}
+.lyric b{font-weight:400;color:#b9548a}
+/* Rays */
+.rays{position:absolute;inset:-6%;z-index:-1}
+/* Counter */
+.stats{background:var(--mint);color:var(--plum)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.stat{background:#fffdf8;border-radius:22px;padding:20px;container-type:inline-size}
+.stat b{display:block;font-family:Shrikhand,serif;font-weight:400;font-size:clamp(18px,11.5cqi,40px);line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat span{font-size:15px}
+.note{font-size:13px;margin-top:14px;opacity:.8}
+.next{font-size:18px;font-weight:600;margin:0 0 20px}
+/* Rente */
+.rente{background:#d6ecff;color:var(--plum)}
+.rgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(16px,4vw,48px);align-items:center}
+.rbig{font-family:Shrikhand,serif;font-size:clamp(64px,12vw,132px);line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rbig small{display:block;font-family:"DM Sans",sans-serif;font-weight:700;font-size:20px;margin-top:8px}
+.rlist{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.rlist li{display:flex;justify-content:space-between;gap:12px;background:#fffdf8;border-radius:16px;padding:12px 16px}
+.rlist b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.rbar{height:14px;border-radius:999px;background:#fffdf8;border:2px solid var(--plum);overflow:hidden;margin-top:14px}
+.rbar i{display:block;height:100%;background:#a2d2ff}
+@media(max-width:600px){.rgrid{grid-template-columns:1fr}}
+/* Spiel */
+.game{background:#fff6cc;color:var(--plum)}
+.gbox{position:relative;aspect-ratio:16/6.4;border-radius:22px;overflow:hidden;border:3px solid var(--plum);box-shadow:0 12px 0 #d8c3ee;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+#gstart{position:absolute;left:50%;top:76%;transform:translate(-50%,-50%);z-index:2;white-space:nowrap}
+#gstart:hover{transform:translate(-50%,-50%) translateY(-2px)}
+#gstart[hidden]{display:none}
+.gbox canvas{position:absolute;inset:0;width:100%;height:100%;cursor:pointer;-webkit-tap-highlight-color:transparent}
+@media(max-width:600px){.gbox{aspect-ratio:4/3.2}}
+/* Timeline */
+.year{background:var(--card)}
+.tl{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.tl li{display:grid;grid-template-columns:9em minmax(0,1fr);gap:18px;padding:16px 0;border-top:2px dashed var(--soft)}
+.tl li.me{background:var(--sun);color:var(--plum);border-radius:18px;padding:16px 18px;border:0;margin:6px -18px}
+.tl time{font-family:Shrikhand,serif;font-size:20px;white-space:nowrap}
+.tl strong{display:block;font-size:17px}
+.tl p{margin:2px 0 0;color:var(--muted)}
+.tl li.me p{color:var(--plum)}
+/* Card */
+.card{background:var(--bg)}
+.gc{max-width:760px;background:var(--card);border-radius:28px;padding:clamp(22px,4vw,44px);box-shadow:0 14px 0 #d8c3ee}
+.gc blockquote{font-family:Shrikhand,serif;font-size:clamp(22px,3vw,30px);line-height:1.25;margin:0 0 22px;min-height:3.8em}
+.gc .btns button.ghost{color:var(--ink)}
+.copied{font-size:15px;margin-left:6px;align-self:center}
+footer{padding:28px max(5vw,16px);font-size:14px;text-align:center;text-wrap:balance}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+@media(max-width:860px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
+@media(max-width:600px){.hero{display:flex;flex-direction:column;align-items:stretch;gap:0}.hero>div:first-child{display:contents}
+  .name,.age,.btns,.meter,.wish,.lead{position:relative;z-index:1}
+  .name{order:2}.age{order:3}.cakebox{order:4;max-width:420px;margin:8px auto 4px}
+  .btns{order:5}.lyric{order:7}.hero .btns>button{flex:1 1 auto;white-space:nowrap;font-size:15px;padding-inline:16px;min-width:0}.meter{order:6}.wish{order:7}.lead{order:8}
+  .tl li{grid-template-columns:1fr;gap:2px}.tl li.me{margin:6px 0}}
+@media(prefers-reduced-motion:reduce){button{transition:none}}
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+
+<header class="band">
+  <div class="hero">
+    <div>
+      <h1 class="name">Björn</h1>
+      <h2 class="age" id="ageLine">wird heute 57!</h2>
+      <p class="lead">Geboren an einem Donnerstag im Jahr der Mondlandung. Auf der Torte brennen 57 Kerzen – halte den Knopf 5 Sekunden gedrückt und puste sie alle aus. Wer zu früh loslässt, erlebt Trickkerzen. Danach gibt’s ein Ständchen.</p>
+      <div class="btns">
+        <button id="hold" aria-describedby="wish"><span id="holdTxt">Halten zum Auspusten</span></button>
+        <button class="ghost" id="relight">Neu anzünden</button>
+        <button class="ghost" id="song" aria-pressed="false">Ständchen spielen</button>
+      </div>
+      <p class="wish" id="wish" aria-live="polite"></p>
+      <p class="lyric" id="lyric" aria-hidden="true"></p>
+    </div>
+    <div class="cakebox" id="cake">
+      <svg viewBox="0 0 400 370" aria-hidden="true">
+        <defs>
+          <linearGradient id="ck" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--cake)"/><stop offset="1" stop-color="#f6e2d6"/></linearGradient>
+        </defs>
+        <g id="rays" opacity=".55"></g>
+        <ellipse cx="200" cy="345" rx="175" ry="20" fill="#5b4a6e" opacity=".25"/>
+        <ellipse cx="200" cy="330" rx="170" ry="22" fill="#ffffff" stroke="#5b4a6e" stroke-width="3"/>
+        <!-- untere Etage -->
+        <rect x="55" y="225" width="290" height="100" rx="18" fill="url(#ck)" stroke="#5b4a6e" stroke-width="3"/>
+        <ellipse cx="200" cy="226" rx="145" ry="22" fill="var(--cake2)" stroke="#5b4a6e" stroke-width="3"/>
+        <path d="M55 245 q24 30 48 0 q24 30 48 0 q24 30 48 0 q24 30 48 0 q24 30 48 0 q25 30 50 0 v-8 a18 18 0 0 0 -18 -12 h-254 a18 18 0 0 0 -18 12z" fill="var(--cake2)" stroke="#5b4a6e" stroke-width="3"/>
+        <g fill="#5b4a6e" opacity=".85"><circle cx="100" cy="295" r="5"/><circle cx="160" cy="300" r="5"/><circle cx="220" cy="293" r="5"/><circle cx="285" cy="299" r="5"/></g>
+        <!-- obere Etage -->
+        <rect x="100" y="160" width="200" height="70" rx="14" fill="url(#ck)" stroke="#5b4a6e" stroke-width="3"/>
+        <path d="M100 175 q20 24 40 0 q20 24 40 0 q20 24 40 0 q20 24 40 0 q20 24 40 0 v-4 a14 14 0 0 0 -14 -11 h-172 a14 14 0 0 0 -14 11z" fill="#fff1a8" stroke="#5b4a6e" stroke-width="3"/>
+        <ellipse cx="200" cy="160" rx="100" ry="15" fill="#fff1a8" stroke="#5b4a6e" stroke-width="3"/>
+      </svg>
+      <canvas id="candles" role="img" aria-label="Geburtstagstorte mit 57 brennenden Kerzen"></canvas>
+    </div>
+  </div>
+</header>
+
+<section class="band stats">
+  <div class="wrap">
+    <h2>So viel Björn gibt es schon</h2>
+    <p class="next" id="next"></p>
+    <div class="grid" id="grid"></div>
+    <p class="note">Läuft live mit. Vollmonde und Herzschläge sind grob geschätzt (Ø 29,5 Tage je Mondzyklus, Ø 70 Schläge pro Minute).</p>
+  </div>
+</section>
+
+<section class="band rente">
+  <div class="wrap">
+    <h2>Countdown zur Rente</h2>
+    <div class="rgrid">
+      <div>
+        <div class="rbig" id="rDays">–<small>Tage bis zur Rente</small></div>
+        <div class="rbar" aria-hidden="true"><i id="rBar"></i></div>
+        <p class="note" id="rBarTxt"></p>
+      </div>
+      <ul class="rlist" id="rList"></ul>
+    </div>
+    <p class="note">Regelaltersrente mit 67 nach heute geltendem Recht: Sie beginnt im Monat nach dem 67. Geburtstag, also am 1. Dezember 2036. Wer früher aufhört, z. B. nach 45 Beitragsjahren, ist natürlich schneller durch.</p>
+  </div>
+</section>
+
+<section class="band game">
+  <div class="wrap">
+    <h2>Lauf, Björn, lauf!</h2>
+    <p class="next">Der 60. Geburtstag ist hinter dir her. Spring über Geschenke und Kerzen und schnapp dir Kaffee für mehr Vorsprung.</p>
+    <div class="gbox"><button id="gstart">Spiel starten</button><canvas id="game" role="img" aria-label="Mini-Spiel: Björn rennt vor einer riesigen 60 davon. Tippen oder Leertaste zum Springen."></canvas></div>
+  </div>
+</section>
+
+<section class="band year">
+  <div class="wrap">
+    <h2>1969 – was für ein Jahrgang</h2>
+    <ol class="tl" id="tl"></ol>
+  </div>
+</section>
+
+<section class="band card">
+  <div class="wrap">
+    <h2>Ein Glückwunsch für Björn</h2>
+    <div class="gc">
+      <blockquote id="quote"></blockquote>
+      <div class="btns">
+        <button id="newq">Noch einer</button>
+        <button class="ghost" id="copy">Kopieren</button>
+        <span class="copied" id="copied" aria-live="polite"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>Mit Liebe gebacken · 27.11.1969 bis heute – und noch viele Jahre mehr</footer>
+
+<script>
+{
+const birth = new Date(1969, 10, 27, 0, 0, 0);
+const $ = id => document.getElementById(id);
+const fmt = n => Math.floor(n).toLocaleString('de-DE');
+
+/* Alter & Countdown */
+const now0 = new Date();
+let age = now0.getFullYear() - 1969;
+const bdThisYear = new Date(now0.getFullYear(), 10, 27);
+const isToday = now0.getMonth() === 10 && now0.getDate() === 27;
+if (now0 < bdThisYear) age--;
+$('ageLine').textContent = isToday ? `wird heute ${age}!` : `ist ${age} Jahre jung`;
+
+function nextBirthday(){
+  const n = new Date();
+  let d = new Date(n.getFullYear(), 10, 27);
+  if (n >= new Date(n.getFullYear(), 10, 28)) d = new Date(n.getFullYear() + 1, 10, 27);
+  return d;
+}
+function updNext(){
+  const n = new Date();
+  if (n.getMonth() === 10 && n.getDate() === 27) { $('next').textContent = 'Heute ist der Tag – Torte, Kerzen, Konfetti!'; return; }
+  const ms = nextBirthday() - n, days = Math.ceil(ms / 864e5);
+  $('next').textContent = `Noch ${days} Tage bis zum ${nextBirthday().getFullYear() - 1969}. Geburtstag.`;
+}
+
+/* Lebenszähler */
+const stats = [
+  ['days', 'Tage auf der Welt', ms => ms / 864e5],
+  ['hours', 'Stunden voller Leben', ms => ms / 36e5],
+  ['moons', 'Vollmonde gesehen', ms => ms / 864e5 / 29.53],
+  ['beats', 'Herzschläge, ungefähr', ms => ms / 6e4 * 70]
+];
+$('grid').innerHTML = stats.map(s => `<div class="stat"><b id="s-${s[0]}">–</b><span>${s[1]}</span></div>`).join('');
+function tick(){
+  const ms = Date.now() - birth.getTime();
+  for (const s of stats) $('s-' + s[0]).textContent = fmt(s[2](ms));
+}
+tick(); updNext();
+setInterval(tick, 1000); setInterval(updNext, 60000);
+
+/* Rente */
+const rente = new Date(2036, 11, 1), start18 = new Date(1987, 10, 27);
+function updRente(){
+  const n = new Date(), today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+  const days = Math.max(0, Math.round((rente - today) / 864e5));
+  let mondays = 0, weekends = 0;
+  for (let d = new Date(today); d < rente; d.setDate(d.getDate() + 1)) { const w = d.getDay(); if (w === 1) mondays++; if (w === 6) weekends++; }
+  let bdays = 0; for (let yy = today.getFullYear(); yy <= 2036; yy++) { const b = new Date(yy, 10, 27); if (b > today && b < rente) bdays++; }
+  let y = rente.getFullYear() - today.getFullYear(), m = rente.getMonth() - today.getMonth();
+  if (rente.getDate() < today.getDate()) m--;
+  if (m < 0) { y--; m += 12; }
+  const mid = new Date(today.getFullYear() + y, today.getMonth() + m, today.getDate());
+  const dd = Math.round((rente - mid) / 864e5);
+  const parts = [[y, 'Jahr', 'Jahre'], [m, 'Monat', 'Monate'], [dd, 'Tag', 'Tage']].filter(q => q[0] > 0).map(q => `${q[0]} ${q[0] === 1 ? q[1] : q[2]}`);
+  const rest = parts.length > 1 ? parts.slice(0, -1).join(', ') + ' und ' + parts[parts.length - 1] : (parts[0] || '0 Tage');
+  $('rDays').firstChild.textContent = days ? fmt(days) : 'Rente!';
+  $('rList').innerHTML = [
+    ['Rentenbeginn', '1. Dezember 2036'],
+    ['Noch', rest],
+    ['Montage, die noch kommen', fmt(mondays)],
+    ['Wochenenden bis dahin', fmt(weekends)],
+    ['Geburtstage bis dahin', fmt(bdays)]
+  ].map(r => `<li><span>${r[0]}</span><b>${r[1]}</b></li>`).join('');
+  const p = Math.min(1, Math.max(0, (n - start18) / (rente - start18)));
+  $('rBar').style.width = (p * 100).toFixed(1) + '%';
+  $('rBarTxt').textContent = `${(p * 100).toFixed(1).replace('.', ',')} % der Strecke vom 18. Geburtstag bis zur Rente sind geschafft.`;
+}
+updRente(); setInterval(updRente, 60000);
+
+/* 1969 */
+const ev = [
+  ['2. März', 'Concorde hebt ab', 'Das Überschall-Passagierflugzeug startet in Toulouse zu seinem Erstflug.'],
+  ['20. Juli', 'Menschen auf dem Mond', 'Apollo 11 landet, Neil Armstrong und Buzz Aldrin betreten als Erste den Mond.'],
+  ['15.–18. Aug.', 'Woodstock', 'Hunderttausende feiern auf einer Farm im Bundesstaat New York drei Tage Musik.'],
+  ['21. Okt.', 'Willy Brandt wird Kanzler', 'Der Bundestag wählt ihn zum vierten Bundeskanzler der Bundesrepublik.'],
+  ['29. Okt.', 'Das Netz sagt „LO“', 'Im ARPANET geht die erste Nachricht zwischen zwei Rechnern hin und her – der Urahn des Internets.'],
+  ['10. Nov.', 'Sesamstraße startet', 'In den USA läuft die erste Folge der Kinderserie.'],
+  ['27. Nov.', 'Björn ist da!', 'An einem Donnerstag kommt das eigentliche Highlight des Jahres zur Welt.', 1]
+];
+$('tl').innerHTML = ev.map(e => `<li${e[3] ? ' class="me"' : ''}><time>${e[0]}</time><div><strong>${e[1]}</strong><p>${e[2]}</p></div></li>`).join('');
+
+/* Glückwünsche */
+const quotes = [
+  'Lieber Björn, 57 Jahre – und noch immer der Grund, warum es auf jeder Party gute Laune gibt. Alles Gute!',
+  'Happy Birthday, Björn! Du bist im Jahr der Mondlandung geboren – kein Wunder, dass du nach den Sternen greifst.',
+  'Auf dich, Björn: Gesundheit, Glück und ein Jahr, in dem einfach alles klappt.',
+  '57 ist keine Zahl, 57 ist eine Auszeichnung. Herzlichen Glückwunsch, Björn!',
+  'Woodstock, Concorde, Mondlandung – und dann kamst du. 1969 hat sich das Beste bis zum Schluss aufgehoben.',
+  'Lieber Björn, möge dein neues Lebensjahr so voll sein wie deine Torte – mit allem drauf und noch einem Stück extra.',
+  'Alles Liebe zum Geburtstag, Björn! Bleib genau so, wie du bist – nur noch ein bisschen glücklicher.'
+];
+let qi = Math.floor(Math.random() * quotes.length);
+const showQ = () => { $('quote').textContent = quotes[qi]; $('copied').textContent = ''; };
+showQ();
+$('newq').addEventListener('click', () => { qi = (qi + 1 + Math.floor(Math.random() * (quotes.length - 1))) % quotes.length; showQ(); });
+$('copy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(quotes[qi]); $('copied').textContent = 'Kopiert!'; }
+  catch (e) { $('copied').textContent = 'Kopieren ging nicht – einfach markieren.'; }
+});
+
+/* Strahlen hinter der Torte */
+const rays = $('rays'); let r = '';
+for (let i = 0; i < 18; i++) {
+  const a1 = i * 20 * Math.PI / 180, a2 = (i * 20 + 9) * Math.PI / 180, R = 260, cx = 200, cy = 200;
+  r += `<path d="M${cx} ${cy} L${cx + R * Math.cos(a1)} ${cy + R * Math.sin(a1)} L${cx + R * Math.cos(a2)} ${cy + R * Math.sin(a2)}Z" fill="#ffffff"/>`;
+}
+rays.innerHTML = r;
+
+/* Mini-Game: Björn rennt vor dem 60. davon */
+const gc = $('game'), gx = gc.getContext('2d');
+const GH = 300, GROUND = 252;
+let GW = 800, GS = 1, gVisible = false;
+function gfit(){
+  const r = gc.getBoundingClientRect();
+  gc.width = Math.max(1, r.width * devicePixelRatio); gc.height = Math.max(1, r.height * devicePixelRatio);
+  GS = gc.height / GH; GW = gc.width / GS;
+}
+const gro = new ResizeObserver(gfit); gro.observe(gc); gfit();
+const gio = new IntersectionObserver(es => { gVisible = es[0].isIntersecting; if (!gVisible && st === 'run') { st = 'pause'; setGbtn(); } });
+gio.observe(gc);
+let st = 'ready', P, gap, obs, items, pops, speed, dist, tSpawn, tItem, overAt = 0, gt = 0, flash = 0;
+let best = 0;
+try { best = +localStorage.getItem('bjoern60best') || 0; } catch (_) {}
+const bx = () => Math.min(GW * .62, Math.max(170, GW * .5));
+const gk = () => Math.min(1, (bx() - 60) / 300);
+function greset(){
+  P = { y: GROUND, vy: 0, on: true, jumps: 0, hurt: 0, leg: 0 };
+  gap = 230; obs = []; items = []; pops = []; speed = 330; dist = 0; tSpawn = 1.2; tItem = 4;
+}
+greset();
+const gbtn = $('gstart');
+function setGbtn(){
+  gbtn.hidden = st === 'run';
+  gbtn.textContent = st === 'over' ? 'Nochmal spielen' : st === 'pause' ? 'Weiter' : 'Spiel starten';
+}
+gbtn.addEventListener('click', () => {
+  if (st === 'over') greset();
+  st = 'run'; gbtn.blur(); setGbtn();
+});
+function jump(){
+  if (st !== 'run') return;
+  if (P.on || P.jumps < 2) { P.vy = P.jumps ? -470 : -580; P.on = false; P.jumps++; }
+}
+gc.addEventListener('pointerdown', e => { e.preventDefault(); jump(); });
+addEventListener('keydown', e => {
+  if (!gVisible || !(e.code === 'Space' || e.code === 'ArrowUp')) return;
+  if (e.target.closest && e.target.closest('button,input,textarea,a')) return;
+  e.preventDefault(); if (!e.repeat) jump();
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden && st === 'run') { st = 'pause'; setGbtn(); } });
+function pop(x, y, text, col){ pops.push({ x, y, text, col, life: 0 }); }
+function gupdate(dt){
+  gt += dt;
+  flash = Math.max(0, flash - dt);
+  if (st !== 'run') return;
+  speed = Math.min(720, speed + 7 * dt); dist += speed * dt;
+  P.vy += 1900 * dt; P.y += P.vy * dt;
+  if (P.y >= GROUND) { P.y = GROUND; P.vy = 0; P.on = true; P.jumps = 0; }
+  P.leg += dt * speed / 28; P.hurt = Math.max(0, P.hurt - dt);
+  // die 60 holt langsam auf
+  gap -= (5 + speed / 140) * dt;
+  tSpawn -= dt;
+  if (tSpawn <= 0) {
+    const r = Math.random();
+    const o = r < .45 ? { k: 'gift', w: 34, h: 30 } : r < .8 ? { k: 'candle', w: 14, h: 54 } : { k: 'gift2', w: 66, h: 30 };
+    o.x = GW + 40; obs.push(o);
+    tSpawn = (300 + Math.random() * 320) / speed + .25;
+  }
+  tItem -= dt;
+  if (tItem <= 0) { items.push({ x: GW + 40, y: GROUND - 95 - Math.random() * 40 }); tItem = 4 + Math.random() * 4; }
+  const L = bx() - 12, R = bx() + 12, T = P.y - 50;
+  for (const o of obs) {
+    o.x -= speed * dt;
+    if (!o.hit && o.x < R && o.x + o.w > L && P.y > GROUND - o.h + 4) {
+      o.hit = true; gap -= 60; P.hurt = .6; flash = .25; pop(bx(), T - 10, 'Autsch!', '#b9548a');
+    }
+  }
+  for (const it of items) {
+    it.x -= speed * dt;
+    if (!it.got && it.x < R + 6 && it.x + 20 > L - 6 && T < it.y + 18 && P.y > it.y - 4) {
+      it.got = true; gap = Math.min(300, gap + 70); pop(bx(), T - 10, 'Kaffee! +Vorsprung', '#3e3150');
+    }
+  }
+  obs = obs.filter(o => o.x > -90); items = items.filter(i => i.x > -40 && !i.got);
+  for (const p of pops) { p.life += dt; p.y -= 30 * dt; }
+  pops = pops.filter(p => p.life < 1.1);
+  if (gap <= 34) {
+    st = 'over'; overAt = performance.now(); setGbtn();
+    const m = Math.floor(dist / 40);
+    if (m > best) { best = m; try { localStorage.setItem('bjoern60best', best); } catch (_) {} }
+  }
+}
+function rr(x, y, w, h, r){ gx.beginPath(); gx.roundRect ? gx.roundRect(x, y, w, h, r) : gx.rect(x, y, w, h); }
+function gdraw(){
+  gx.setTransform(GS, 0, 0, GS, 0, 0);
+  const sk = gx.createLinearGradient(0, 0, 0, GH); sk.addColorStop(0, '#d6ecff'); sk.addColorStop(1, '#ffe5d9');
+  gx.fillStyle = sk; gx.fillRect(0, 0, GW, GH);
+  // Wolken + Wimpelkette
+  const off = dist * .2;
+  gx.fillStyle = 'rgba(255,255,255,.85)';
+  for (let i = 0; i < 5; i++) {
+    const x = ((i * 260 - off) % (GW + 300) + GW + 300) % (GW + 300) - 120, y = 50 + (i % 3) * 28;
+    gx.beginPath(); gx.arc(x, y, 22, 0, 6.29); gx.arc(x + 26, y - 8, 26, 0, 6.29); gx.arc(x + 54, y, 20, 0, 6.29); gx.fill();
+  }
+  const cols = ['#ffafcc', '#a2d2ff', '#fff1a8', '#cdeedd', '#d8c3ee'], boff = (dist * .5) % 40;
+  gx.strokeStyle = '#5b4a6e'; gx.lineWidth = 1.5; gx.beginPath(); gx.moveTo(0, 14); gx.lineTo(GW, 14); gx.stroke();
+  for (let x = -boff, i = Math.floor(dist * .5 / 40); x < GW + 40; x += 40, i++) {
+    gx.fillStyle = cols[((i % 5) + 5) % 5]; gx.beginPath(); gx.moveTo(x, 14); gx.lineTo(x + 28, 14); gx.lineTo(x + 14, 38); gx.closePath(); gx.fill();
+  }
+  // Boden
+  gx.fillStyle = '#cdeedd'; gx.fillRect(0, GROUND, GW, GH - GROUND);
+  gx.strokeStyle = '#5b4a6e'; gx.lineWidth = 2.5; gx.beginPath(); gx.moveTo(0, GROUND); gx.lineTo(GW, GROUND); gx.stroke();
+  gx.fillStyle = 'rgba(91,74,110,.25)';
+  for (let x = -(dist % 60); x < GW; x += 60) gx.fillRect(x, GROUND + 18, 26, 4);
+  // Hindernisse
+  for (const o of obs) {
+    const y = GROUND - o.h;
+    if (o.k === 'candle') {
+      gx.fillStyle = '#a2d2ff'; gx.strokeStyle = '#5b4a6e'; gx.lineWidth = 2; rr(o.x, y, o.w, o.h, 3); gx.fill(); gx.stroke();
+      gx.strokeStyle = '#fff'; gx.lineWidth = 3;
+      for (let k = 8; k < o.h - 4; k += 11) { gx.beginPath(); gx.moveTo(o.x + 2, y + k + 4); gx.lineTo(o.x + o.w - 2, y + k - 2); gx.stroke(); }
+      const fl = gx.createLinearGradient(0, y - 22, 0, y); fl.addColorStop(0, '#fff7d1'); fl.addColorStop(1, '#ff8a3d');
+      gx.fillStyle = fl; gx.beginPath(); gx.ellipse(o.x + o.w / 2, y - 10 + Math.sin(gt * 20) , 6, 11, 0, 0, 6.29); gx.fill();
+    } else {
+      const n = o.k === 'gift2' ? 2 : 1, w = o.w / n;
+      for (let k = 0; k < n; k++) {
+        const x = o.x + k * w;
+        gx.fillStyle = k ? '#d8c3ee' : '#ffafcc'; gx.strokeStyle = '#5b4a6e'; gx.lineWidth = 2; rr(x + 1, y, w - 2, o.h, 3); gx.fill(); gx.stroke();
+        gx.fillStyle = '#fff1a8'; gx.fillRect(x + w / 2 - 3, y, 6, o.h); gx.fillRect(x + 1, y + o.h / 2 - 3, w - 2, 6);
+        gx.beginPath(); gx.ellipse(x + w / 2 - 6, y - 4, 7, 5, -.5, 0, 6.29); gx.ellipse(x + w / 2 + 6, y - 4, 7, 5, .5, 0, 6.29); gx.fill(); gx.stroke();
+      }
+    }
+  }
+  // Kaffee
+  for (const it of items) {
+    const y = it.y + Math.sin(gt * 4 + it.x * .02) * 4;
+    gx.fillStyle = '#fffdf8'; gx.strokeStyle = '#5b4a6e'; gx.lineWidth = 2;
+    rr(it.x, y, 20, 18, 3); gx.fill(); gx.stroke();
+    gx.beginPath(); gx.arc(it.x + 21, y + 8, 5, -1.4, 1.4); gx.stroke();
+    gx.fillStyle = '#b07a52'; gx.fillRect(it.x + 3, y + 3, 14, 4);
+    gx.strokeStyle = 'rgba(91,74,110,.5)'; gx.beginPath(); gx.moveTo(it.x + 7, y - 4); gx.quadraticCurveTo(it.x + 3, y - 10, it.x + 8, y - 15); gx.stroke();
+  }
+  // Die 60 mit Beinen
+  const cx = bx() - gap * gk() - 30, bob = Math.sin(gt * 14) * 3, run = Math.sin(gt * 16);
+  gx.strokeStyle = '#5b4a6e'; gx.lineWidth = 5; gx.lineCap = 'round';
+  gx.beginPath(); gx.moveTo(cx - 14, GROUND - 22); gx.lineTo(cx - 14 + run * 12, GROUND); gx.moveTo(cx + 14, GROUND - 22); gx.lineTo(cx + 14 - run * 12, GROUND); gx.stroke();
+  gx.font = '84px Shrikhand, "DM Sans", serif'; gx.textAlign = 'center'; gx.textBaseline = 'alphabetic';
+  gx.lineWidth = 7; gx.lineJoin = 'round'; gx.strokeStyle = '#5b4a6e'; gx.strokeText('60', cx, GROUND - 16 + bob);
+  gx.fillStyle = '#ffafcc'; gx.fillText('60', cx, GROUND - 16 + bob);
+  for (const ex of [-14, 20]) {
+    gx.fillStyle = '#fff'; gx.beginPath(); gx.arc(cx + ex, GROUND - 62 + bob, 7, 0, 6.29); gx.fill(); gx.lineWidth = 2; gx.stroke();
+    gx.fillStyle = '#3e3150'; gx.beginPath(); gx.arc(cx + ex + 3, GROUND - 62 + bob, 3, 0, 6.29); gx.fill();
+  }
+  // Björn mit Partyhut
+  const x = bx(), y = P.y, lg = P.on ? Math.sin(P.leg) : .6;
+  gx.globalAlpha = P.hurt > 0 && Math.floor(P.hurt * 20) % 2 ? .35 : 1;
+  gx.strokeStyle = '#5b4a6e'; gx.lineWidth = 5;
+  gx.beginPath(); gx.moveTo(x - 4, y - 18); gx.lineTo(x - 4 + lg * 10, y); gx.moveTo(x + 4, y - 18); gx.lineTo(x + 4 - lg * 10, y); gx.stroke();
+  gx.beginPath(); gx.moveTo(x - 8, y - 34); gx.lineTo(x - 16 - lg * 6, y - 24); gx.moveTo(x + 8, y - 34); gx.lineTo(x + 16 + lg * 6, y - 26); gx.stroke();
+  gx.fillStyle = '#a2d2ff'; gx.lineWidth = 2.5; rr(x - 11, y - 42, 22, 26, 7); gx.fill(); gx.stroke();
+  gx.fillStyle = '#ffdcc8'; gx.beginPath(); gx.arc(x, y - 52, 11, 0, 6.29); gx.fill(); gx.stroke();
+  gx.fillStyle = '#b08a6a'; gx.beginPath(); gx.arc(x, y - 47, 8, .15, Math.PI - .15); gx.fill();
+  gx.fillStyle = '#3e3150'; gx.beginPath(); gx.arc(x + 5, y - 55, 1.8, 0, 6.29); gx.fill();
+  gx.fillStyle = '#fff1a8'; gx.beginPath(); gx.moveTo(x - 7, y - 61); gx.lineTo(x + 7, y - 61); gx.lineTo(x + 1, y - 80); gx.closePath(); gx.fill(); gx.stroke();
+  gx.fillStyle = '#ffafcc'; gx.beginPath(); gx.arc(x + 1, y - 81, 3.5, 0, 6.29); gx.fill();
+  gx.globalAlpha = 1;
+  for (const p of pops) {
+    gx.globalAlpha = 1 - p.life / 1.1; gx.fillStyle = p.col; gx.font = '700 16px "DM Sans", sans-serif'; gx.fillText(p.text, p.x, p.y);
+  }
+  gx.globalAlpha = 1;
+  if (flash > 0) { gx.fillStyle = `rgba(255,175,204,${flash})`; gx.fillRect(0, 0, GW, GH); }
+  // Anzeige
+  gx.textAlign = 'left'; gx.fillStyle = '#3e3150'; gx.font = '700 17px "DM Sans", sans-serif';
+  gx.fillText(`${Math.floor(dist / 40)} m`, 14, 64);
+  gx.font = '500 14px "DM Sans", sans-serif'; gx.fillText(`Rekord ${best} m`, 14, 84);
+  const mw = Math.min(160, GW * .3), mx = GW - mw - 14;
+  gx.textAlign = 'right'; gx.font = '500 14px "DM Sans", sans-serif'; gx.fillText('Abstand zum 60.', GW - 14, 64);
+  gx.fillStyle = '#fffdf8'; gx.strokeStyle = '#5b4a6e'; gx.lineWidth = 2; rr(mx, 72, mw, 12, 6); gx.fill(); gx.stroke();
+  const gp = Math.max(0, Math.min(1, (gap - 34) / (300 - 34)));
+  gx.fillStyle = gp < .25 ? '#b9548a' : '#a2d2ff'; rr(mx + 2, 74, (mw - 4) * gp, 8, 4); gx.fill();
+  // Start-/Endbild
+  if (st !== 'run') {
+    gx.fillStyle = 'rgba(255,253,248,.88)'; const pw = Math.min(GW - 40, 420), px = (GW - pw) / 2;
+    rr(px, 92, pw, 170, 18); gx.fill(); gx.strokeStyle = '#5b4a6e'; gx.stroke();
+    gx.textAlign = 'center'; gx.fillStyle = '#3e3150';
+    gx.font = '26px Shrikhand, "DM Sans", serif';
+    const head = st === 'over' ? 'Der 60. hat dich erwischt!' : st === 'pause' ? 'Pause' : 'Lauf, Björn, lauf!';
+    gx.fillText(head, GW / 2, 136, pw - 24);
+    gx.font = '500 15px "DM Sans", sans-serif';
+    const l1 = st === 'over' ? `${Math.floor(dist / 40)} m Vorsprung · Rekord ${best} m` : 'Tippen oder Leertaste = springen, 2× = Doppelsprung';
+    const l2 = st === 'over' ? 'Noch eine Runde?' : st === 'pause' ? 'Pausiert – weiter mit dem Knopf' : 'Kaffee schnappen bringt Vorsprung';
+    gx.fillText(l1, GW / 2, 162, pw - 24); gx.fillText(l2, GW / 2, 184, pw - 24);
+  }
+}
+setGbtn();
+let glast = performance.now();
+function gloop(now){
+  const dt = Math.min(.05, (now - glast) / 1000); glast = now;
+  if (gVisible) { gupdate(dt); gdraw(); }
+  requestAnimationFrame(gloop);
+}
+requestAnimationFrame(gloop);
+
+/* Konfetti */
+const cv = $('fx'), ctx = cv.getContext('2d');
+let parts = [], running = false;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const cols = ['#fff1a8', '#ffafcc', '#a2d2ff', '#cdeedd', '#d8c3ee', '#ffd6a5'];
+function size(){ cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; }
+size(); addEventListener('resize', size);
+function burst(x, y, n){
+  for (let i = 0; i < n; i++) parts.push({
+    x: x * devicePixelRatio, y: y * devicePixelRatio,
+    vx: (Math.random() - .5) * 16 * devicePixelRatio, vy: (-Math.random() * 14 - 4) * devicePixelRatio,
+    w: (6 + Math.random() * 6) * devicePixelRatio, h: (10 + Math.random() * 8) * devicePixelRatio,
+    a: Math.random() * 6, va: (Math.random() - .5) * .3, c: cols[i % cols.length], life: 0
+  });
+  if (!running) { running = true; requestAnimationFrame(step); }
+}
+function step(){
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  parts = parts.filter(p => p.y < cv.height + 40 && p.life < 400);
+  for (const p of parts) {
+    p.vy += .35 * devicePixelRatio; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va; p.life++;
+    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c;
+    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.a * 2))); ctx.restore();
+  }
+  if (parts.length) requestAnimationFrame(step); else { running = false; ctx.clearRect(0, 0, cv.width, cv.height); }
+}
+
+/* 57 Kerzen mit Flammen-Physik */
+const cake = $('cake'), cc = $('candles'), g = cc.getContext('2d');
+const pal = ['#ffafcc', '#a2d2ff', '#cdeedd', '#d8c3ee', '#ffd6a5', '#fff1a8'];
+const C = [];
+function addRow(cx, cy, rx, ry, y, n, h, x0, x1){
+  const dy = y - cy, half = rx * Math.sqrt(Math.max(0, 1 - (dy / ry) ** 2)) - 7;
+  const a = x0 ?? cx - half, b = x1 ?? cx + half;
+  for (let i = 0; i < n; i++) C.push({ x: n === 1 ? (a + b) / 2 : a + (b - a) * i / (n - 1), y, h });
+}
+// obere Etage: 4 Reihen = 45 Kerzen
+addRow(200, 160, 100, 15, 150, 10, 30); addRow(200, 160, 100, 15, 156, 11, 30);
+addRow(200, 160, 100, 15, 163, 12, 30); addRow(200, 160, 100, 15, 170, 12, 30);
+// untere Etage, links und rechts: 12 Kerzen
+addRow(200, 226, 145, 22, 222, 3, 26, 68, 92); addRow(200, 226, 145, 22, 231, 3, 26, 64, 94);
+addRow(200, 226, 145, 22, 222, 3, 26, 308, 332); addRow(200, 226, 145, 22, 231, 3, 26, 306, 336);
+C.sort((p, q) => p.y - q.y);
+C.forEach((c, i) => Object.assign(c, {
+  col: pal[i % pal.length], th: 0, om: 0, hp: 1, lit: true, relight: 0,
+  r: .3 + Math.random() * .75, ph: Math.random() * 6.28
+}));
+
+let smoke = [], W = 0, holding = false, held = 0, done = false, t = 0, S = 1;
+const HOLD = 5000;
+/* Lage des Handys: Flammen zeigen immer nach oben, Schütteln bringt sie zum Wackeln */
+let up = 0, upTarget = 0, shake = 0;
+const deg = Math.PI / 180;
+function screenAngle(){
+  const a = (screen.orientation && screen.orientation.angle) ?? window.orientation ?? 0;
+  return (+a || 0) * deg;
+}
+function onOrient(e){
+  if (e.beta == null || e.gamma == null) return;
+  const b = e.beta * deg, g = e.gamma * deg;
+  // Richtung "oben" in Gerätekoordinaten (x nach rechts, y nach oben)
+  const ux = -Math.sin(g) * Math.cos(b), uy = Math.sin(b);
+  const m = Math.hypot(ux, uy);
+  // flach auf dem Tisch gibt es kein eindeutiges Oben: dann senkrecht lassen
+  upTarget = m < .2 ? 0 : (Math.atan2(ux, uy) - screenAngle()) * Math.min(1, (m - .2) / .3);
+  upTarget = Math.atan2(Math.sin(upTarget), Math.cos(upTarget));
+}
+function onMotion(e){
+  const a = e.acceleration;
+  if (!a || a.x == null) return;
+  shake = Math.min(3, Math.max(shake, Math.hypot(a.x, a.y, a.z || 0) / 6));
+}
+addEventListener('deviceorientation', onOrient);
+addEventListener('devicemotion', onMotion);
+function askMotion(){
+  // iOS fragt einmal nach Erlaubnis, muss direkt aus dem Tippen heraus kommen
+  try {
+    const P = window.DeviceOrientationEvent;
+    if (P && typeof P.requestPermission === 'function') P.requestPermission().catch(() => {});
+    const M = window.DeviceMotionEvent;
+    if (M && typeof M.requestPermission === 'function') M.requestPermission().catch(() => {});
+  } catch (_) {}
+}
+function fit(){
+  const r = cc.getBoundingClientRect();
+  cc.width = r.width * devicePixelRatio; cc.height = r.height * devicePixelRatio;
+  S = cc.width / 400;
+}
+const cro = new ResizeObserver(fit); cro.observe(cake); fit();
+
+function extinguish(c){
+  c.lit = false; c.hp = 0;
+  const top = c.y - c.h;
+  for (let k = 0; k < 3; k++) smoke.push({ x: c.x, y: top - 2, vx: (Math.random() - .5) * 6, vy: -10 - Math.random() * 14, life: 0, max: 1.4 + Math.random() });
+}
+
+function physics(dt){
+  t += dt;
+  up += (upTarget - up) * Math.min(1, dt * 8);
+  shake *= Math.max(0, 1 - dt * 3);
+  const p = Math.min(1, held / HOLD);
+  const gust = holding ? .12 * Math.sin(t * 7.3) + .08 * Math.sin(t * 13.1) : 0;
+  const target = holding ? .2 + 1.05 * p + gust : 0;
+  W += (target - W) * Math.min(1, dt * (holding ? 6 : 2.5));
+  for (const c of C) {
+    // Wind wirkt pro Kerze unterschiedlich (Böen laufen über die Torte)
+    const local = W * (.75 + .35 * Math.sin(t * 3 + c.x * .045 + c.ph));
+    const noise = Math.sin(t * 9 + c.ph * 3) * .6 + Math.sin(t * 15.7 + c.ph) * .3;
+    // gedämpfte Feder: Flamme biegt sich mit dem Wind, schwingt zurück
+    const acc = -26 * (c.th - up) - 5 * c.om + 40 * local + noise * (c.lit ? 1.2 + shake * 6 : 0);
+    c.om += acc * dt; c.th += c.om * dt;
+    c.th = Math.max(up - 1.4, Math.min(up + 1.4, c.th));
+    if (c.lit) {
+      if (holding) c.hp -= dt * Math.max(0, local - c.r) * 2.6;
+      else c.hp = Math.min(1, c.hp + dt * .8);
+      if (c.hp <= 0) extinguish(c);
+    } else if (!done && !holding && c.relight > 0) {
+      c.relight -= dt;
+      if (c.relight <= 0) { c.lit = true; c.hp = .15; }
+    }
+  }
+  for (const s of smoke) {
+    s.life += dt; s.vx += (W * 40 - s.vx * .5) * dt + (Math.random() - .5) * 8 * dt;
+    s.vx += Math.sin(up) * 14 * dt; s.vy -= Math.cos(up) * 14 * dt; s.x += s.vx * dt; s.y += s.vy * dt;
+  }
+  smoke = smoke.filter(s => s.life < s.max);
+}
+
+function draw(){
+  g.setTransform(S, 0, 0, S, 0, 0);
+  g.clearRect(0, 0, 400, 370);
+  for (const c of C) {
+    const top = c.y - c.h;
+    // Kerze mit Streifen
+    g.fillStyle = c.col; g.strokeStyle = '#5b4a6e'; g.lineWidth = 1.2;
+    g.beginPath(); g.roundRect ? g.roundRect(c.x - 3, top, 6, c.h, 2) : g.rect(c.x - 3, top, 6, c.h); g.fill(); g.stroke();
+    g.strokeStyle = 'rgba(255,255,255,.85)'; g.lineWidth = 1.4;
+    for (let k = 6; k < c.h - 2; k += 7) { g.beginPath(); g.moveTo(c.x - 2.4, top + k + 2); g.lineTo(c.x + 2.4, top + k - 1); g.stroke(); }
+    // Docht
+    g.strokeStyle = c.lit ? '#3e3150' : '#2b2233'; g.lineWidth = 1.4;
+    g.beginPath(); g.moveTo(c.x, top); g.lineTo(c.x + Math.sin(c.th) * 1.5, top - 4); g.stroke();
+    if (!c.lit) continue;
+    const fx = c.x + Math.sin(c.th) * 1.5, fy = top - 3;
+    const fl = .92 + .08 * Math.sin(t * 22 + c.ph * 5);
+    const L = 19 * fl * (.35 + .65 * c.hp) * (1 - .25 * Math.min(1, Math.abs(c.th - up)));
+    const w = 4.6 * (.5 + .5 * c.hp);
+    const tx = fx + Math.sin(c.th) * L, ty = fy - Math.cos(c.th) * L;
+    // Leuchten
+    const gl = g.createRadialGradient(fx, fy - L * .4, 0, fx, fy - L * .4, 22 * c.hp + 5);
+    gl.addColorStop(0, 'rgba(255,214,120,.45)'); gl.addColorStop(1, 'rgba(255,214,120,0)');
+    g.fillStyle = gl; g.beginPath(); g.arc(fx, fy - L * .4, 22 * c.hp + 5, 0, 6.29); g.fill();
+    // Flamme als Tropfen, Spitze folgt dem Biegewinkel
+    const nx = Math.cos(c.th), ny = Math.sin(c.th);
+    const fg = g.createLinearGradient(fx, fy, tx, ty);
+    fg.addColorStop(0, '#ff8a3d'); fg.addColorStop(.55, '#ffd36b'); fg.addColorStop(1, '#fff7d1');
+    g.fillStyle = fg; g.beginPath();
+    g.moveTo(fx - nx * w, fy - ny * w + 1);
+    g.quadraticCurveTo(fx - nx * w * 1.2 + (tx - fx) * .5, fy - ny * w * 1.2 + (ty - fy) * .5, tx, ty);
+    g.quadraticCurveTo(fx + nx * w * 1.2 + (tx - fx) * .5, fy + ny * w * 1.2 + (ty - fy) * .5, fx + nx * w, fy + ny * w + 1);
+    g.quadraticCurveTo(fx, fy + w * 1.4, fx - nx * w, fy - ny * w + 1);
+    g.fill();
+  }
+  for (const s of smoke) {
+    const a = (1 - s.life / s.max) * .22, r = 2 + s.life * 6;
+    g.fillStyle = `rgba(140,124,160,${a})`; g.beginPath(); g.arc(s.x, s.y, r, 0, 6.29); g.fill();
+  }
+}
+
+/* Ständchen: Melodie von "Happy Birthday" (gemeinfrei), deutscher Text */
+let ac = null, songOn = false, songTimers = [], songNodes = [];
+function audio(){
+  try {
+    if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
+    if (ac.state === 'suspended') ac.resume();
+  } catch (_) { ac = null; }
+  return ac;
+}
+const G4 = 67, A4 = 69, B4 = 71, C5 = 72, D5 = 74, E5 = 76, F5 = 77, G5 = 79;
+const tune = [
+  [[G4, .75], [G4, .25], [A4, 1], [G4, 1], [C5, 1], [B4, 2]],
+  [[G4, .75], [G4, .25], [A4, 1], [G4, 1], [D5, 1], [C5, 2]],
+  [[G4, .75], [G4, .25], [G5, 1], [E5, 1], [C5, 1], [B4, 1], [A4, 2]],
+  [[F5, .75], [F5, .25], [E5, 1], [C5, 1], [D5, 1], [C5, 3]]
+];
+const words = [
+  ['Zum ', 'Ge', 'burts', 'tag ', 'viel ', 'Glück'],
+  ['Zum ', 'Ge', 'burts', 'tag ', 'viel ', 'Glück'],
+  ['Zum ', 'Ge', 'burts', 'tag, ', 'lie', 'ber ', 'Björn'],
+  ['Zum ', 'Ge', 'burts', 'tag ', 'viel ', 'Glück!']
+];
+const bass = [[48, 1], [48, 3], [43, 3], [43, 3], [48, 3], [48, 3], [41, 4], [43, 3], [48, 3]];
+const hz = m => 440 * 2 ** ((m - 69) / 12);
+function tone(m, at, dur, vol, type){
+  const o = ac.createOscillator(), o2 = ac.createOscillator(), g = ac.createGain();
+  o.type = type; o.frequency.value = hz(m); o2.type = 'sine'; o2.frequency.value = hz(m) * 2;
+  const g2 = ac.createGain(); g2.gain.value = .25;
+  o.connect(g); o2.connect(g2); g2.connect(g); g.connect(ac.destination);
+  g.gain.setValueAtTime(0, at);
+  g.gain.linearRampToValueAtTime(vol, at + .015);
+  g.gain.exponentialRampToValueAtTime(vol * .35, at + Math.min(dur, .5));
+  g.gain.exponentialRampToValueAtTime(.0001, at + dur + .25);
+  o.start(at); o2.start(at); o.stop(at + dur + .3); o2.stop(at + dur + .3);
+  songNodes.push(o, o2);
+}
+function showLyric(li, si){
+  const el = $('lyric');
+  if (li < 0) { el.textContent = ''; return; }
+  el.innerHTML = words[li].map((w, k) => k <= si ? `<b>${w}</b>` : w).join('');
+}
+function stopSong(){
+  songOn = false;
+  songTimers.forEach(clearTimeout); songTimers = [];
+  songNodes.forEach(n => { try { n.stop(); } catch (_) {} }); songNodes = [];
+  showLyric(-1); $('song').textContent = 'Ständchen spielen'; $('song').setAttribute('aria-pressed', 'false');
+}
+function playSong(){
+  if (!audio()) return;
+  stopSong(); songOn = true;
+  $('song').textContent = 'Ständchen stoppen'; $('song').setAttribute('aria-pressed', 'true');
+  const beat = .52, t0 = ac.currentTime + .15;
+  let b = 0;
+  tune.forEach((line, li) => line.forEach(([m, d], si) => {
+    tone(m, t0 + b * beat, d * beat * .95, .22, 'triangle');
+    songTimers.push(setTimeout(() => showLyric(li, si), (b * beat + .15) * 1000));
+    b += d;
+  }));
+  let bb = 0;
+  for (const [m, d] of bass) { tone(m, t0 + bb * beat, d * beat * .9, .08, 'sine'); bb += d; }
+  songTimers.push(setTimeout(stopSong, (b * beat + 1.2) * 1000));
+}
+$('song').addEventListener('click', () => songOn ? stopSong() : playSong());
+
+
+const hold = $('hold'), holdTxt = $('holdTxt');
+const cheers = ['Alle 57 aus – der Wunsch ist unterwegs!', 'Hipp, hipp, hurra – Björn!', 'Was für eine Puste: 57 von 57!'];
+function setBtn(){
+  const p = Math.min(1, held / HOLD);
+  hold.style.setProperty('--p', p);
+  if (done) holdTxt.textContent = 'Ausgepustet!';
+  else if (holding) holdTxt.innerHTML = `Pusten … <span class="count">${((HOLD - held) / 1000).toFixed(1).replace('.', ',')}</span> s`;
+  else holdTxt.textContent = 'Halten zum Auspusten';
+}
+function start(e){
+  if (done) return;
+  if (e) e.preventDefault();
+  askMotion(); audio();
+  holding = true; $('wish').textContent = '';
+  try { hold.setPointerCapture && e && e.pointerId != null && hold.setPointerCapture(e.pointerId); } catch (_) {}
+}
+function stop(){
+  if (!holding) return;
+  holding = false;
+  if (!done) {
+    const out = C.filter(c => !c.lit).length;
+    held = 0;
+    for (const c of C) if (!c.lit) c.relight = .3 + Math.random() * 1.4;
+    $('wish').textContent = out ? `${out} Kerzen waren schon aus – aber es sind Trickkerzen! Halte volle 5 Sekunden.` : 'Länger pusten – volle 5 Sekunden halten!';
+  }
+  setBtn();
+}
+function finish(){
+  done = true; holding = false;
+  for (const c of C) if (c.lit) extinguish(c);
+  hold.disabled = true;
+  setTimeout(playSong, 700);
+  $('wish').textContent = cheers[Math.floor(Math.random() * cheers.length)];
+  if (!reduce) { burst(innerWidth * .25, innerHeight * .9, 140); burst(innerWidth * .75, innerHeight * .9, 140); }
+}
+hold.addEventListener('pointerdown', start);
+['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => hold.addEventListener(ev, stop));
+hold.addEventListener('contextmenu', e => e.preventDefault());
+hold.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) start(e); });
+hold.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') stop(); });
+hold.addEventListener('blur', stop);
+$('relight').addEventListener('click', () => {
+  stopSong();
+  done = false; held = 0; holding = false; hold.disabled = false; $('wish').textContent = '';
+  for (const c of C) { c.lit = true; c.hp = 1; c.relight = 0; c.r = .3 + Math.random() * .75; }
+  setBtn();
+});
+
+let last = performance.now();
+function loop(now){
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  if (holding && !done) { held += dt * 1000; if (held >= HOLD) { held = HOLD; finish(); } }
+  physics(dt); draw(); setBtn();
+  requestAnimationFrame(loop);
+}
+setBtn(); requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>
