@@ -96,7 +96,7 @@ button.link:disabled{text-decoration:none;cursor:default;color:var(--muted)}
 /* Card */
 .card{background:var(--bg)}
 .gc{max-width:760px;background:var(--card);border-radius:28px;padding:clamp(22px,4vw,44px);box-shadow:0 14px 0 #d8c3ee}
-.gc blockquote{font-family:Shrikhand,serif;font-size:clamp(22px,3vw,30px);line-height:1.25;margin:0 0 22px;min-height:3.8em}
+.gc blockquote{font-family:Shrikhand,serif;font-size:clamp(20px,3vw,30px);line-height:1.25;margin:0 0 22px;display:flex;align-items:center;text-wrap:pretty}
 .gc .btns button.ghost{color:var(--ink)}
 .copied{font-size:15px;margin-left:6px;align-self:center}
 footer{padding:28px max(5vw,16px);font-size:14px;text-align:center;text-wrap:balance}
@@ -316,12 +316,81 @@ const quotes = [
   '57 ist keine Zahl, 57 ist eine Auszeichnung. Herzlichen Glückwunsch, Björn!',
   'Woodstock, Concorde, Mondlandung – und dann kamst du. 1969 hat sich das Beste bis zum Schluss aufgehoben.',
   'Lieber Björn, möge dein neues Lebensjahr so voll sein wie deine Torte – mit allem drauf und noch einem Stück extra.',
-  'Alles Liebe zum Geburtstag, Björn! Bleib genau so, wie du bist – nur noch ein bisschen glücklicher.'
+  'Alles Liebe zum Geburtstag, Björn! Bleib genau so, wie du bist – nur noch ein bisschen glücklicher.',
+  "Am 27. November 1969 kam ein Donnerstagskind zur Welt – und die Welt hat seitdem einen Grund mehr zum Feiern. Alles Gute, Björn!",
+  "Neil Armstrong machte 1969 einen kleinen Schritt. Vier Monate später kam mit dir ein großer Sprung für uns alle. Happy Birthday!",
+  "1969 flog die Concorde zum ersten Mal. Du bist seitdem auch ziemlich weit gekommen – nur mit deutlich weniger Lärm. Alles Gute!",
+  "Woodstock war im August 1969, du kamst im November. Man könnte sagen: Die eigentliche Party ging erst danach los. Prost, Björn!",
+  "Ende Oktober 1969 schickte das ARPANET seine erste Nachricht. Vier Wochen später kam die wichtigste Nachricht des Jahres: Björn ist da!",
+  "Die Sesamstraße startete im November 1969 – genau wie du. Beide bringen seitdem Menschen zum Lachen. Herzlichen Glückwunsch!",
+  "Jahrgang 1969: Mondlandung, Woodstock, Björn. Die Reihenfolge ist chronologisch, nicht nach Wichtigkeit. Alles Gute!",
+  "Ein Donnerstagskind wie du weiß: Das Wochenende ist immer nah. Möge dein neues Lebensjahr ein einziger Donnerstagabend sein!",
+  "Als Schütze zielst du immer nach vorn. Für das 58. Lebensjahr wünschen wir dir nur Volltreffer. Alles Gute, Björn!",
+  "Im chinesischen Kalender ist 1969 das Jahr des Hahns: mutig, ehrlich, fleißig. Passt. Happy Birthday!",
+  "57 Jahre und noch kein bisschen leise. Herzlichen Glückwunsch zum Geburtstag, Björn!",
+  "57 – das ist 3 mal 19, aber vor allem: genau dein Alter. Und das steht dir ausgezeichnet!",
+  "Der 27. November ist ein guter Tag: kurz vor dem ersten Advent, mitten in der Plätzchenzeit und vor allem Björns Geburtstag.",
+  "November-Kinder bringen Licht in die dunkle Jahreszeit. Danke, dass du das seit 1969 zuverlässig erledigst!",
+  "Draußen grau, drinnen Kerzen, Kuchen und Björn – so muss ein 27. November aussehen. Alles Gute!",
+  "Andere Jahrgänge haben Erinnerungen, 1969 hat Geschichte. Und dich. Happy Birthday!",
+  "Du bist älter als der Walkman, die CD und das Handy – und trotzdem moderner als alle drei. Alles Gute!",
+  "Seit 1969 auf der Welt und immer noch nicht ausverkauft: Limitierte Auflage, Jahrgang Björn.",
+  "Ein guter Jahrgang wird mit den Jahren besser. 1969 ist der beste Beweis. Zum Wohl, Björn!",
+  "57 Kerzen sind kein Brandrisiko, sondern eine Lichtshow. Genieß sie – und dann ab an den Kuchen!",
+  "Lieber Björn, auf die nächsten 57 – mindestens! Alles Liebe zum Geburtstag.",
+  "1969 hieß das Motto „Make love, not war“. Heute heißt es: Make Kuchen, not Stress. Happy Birthday!",
+  "Der Mond hatte 1969 Besuch – und die Erde bekam ein Geschenk. Alles Gute zum Geburtstag, Björn!",
+  "Wer im Jahr der Mondlandung geboren ist, hat das Abheben im Blut. Flieg hoch ins neue Lebensjahr!",
+  "Donnerstag, 27. November 1969: ein ganz normaler Tag? Von wegen. Da fing etwas richtig Gutes an. Happy Birthday!",
+  "57 Jahre Erfahrung, 57 Jahre Humor, 57 Jahre Björn. Wir gratulieren von Herzen!",
+  "Bleib, wie du bist – nur mit noch mehr Zeit für die Dinge, die dir Freude machen. Alles Gute zum 57.!",
+  "Im Jahr deiner Geburt sang die halbe Welt von Liebe und Frieden. Wir singen heute für dich: Zum Geburtstag viel Glück!",
+  "57 ist das neue 47 – zumindest, wenn man so jung geblieben ist wie du. Alles Gute, Björn!",
+  "Möge dein 58. Lebensjahr so legendär werden wie 1969 – nur mit besserem WLAN. Alles Gute!",
+  "Der November hat 30 Tage, aber nur einen 27. mit Björn. Herzlichen Glückwunsch!",
+  "Heute zählt nur eins: Kuchen, Kerzen, Konfetti – und du mittendrin. Alles Gute zum Geburtstag!",
+  "Lieber Björn, möge dir das neue Jahr viel Gesundheit, viel Lachen und nur gute Nachrichten bringen.",
+  "Seit 57 Jahren der beste Grund, den 27. November rot im Kalender anzustreichen. Happy Birthday!",
+  "Noch zehn Jahre bis zur Rente – also noch zehn Jahre voller Feierabende, auf die man sich freuen kann. Alles Gute!",
+  "1969 war das Jahr der großen Premieren. Die schönste war am 27. November. Alles Gute, Björn!",
+  "Ein Schütze trifft mit Herz und Humor – am liebsten mit beidem gleichzeitig. Herzlichen Glückwunsch!",
+  "Gäbe es einen Preis für den besten Jahrgang, 1969 hätte ihn wegen dir gewonnen. Happy Birthday!",
+  "Für das neue Lebensjahr: viele gute Tage, ein paar großartige und keine einzige Kerze zu viel. Alles Gute!",
+  "57 Jahre jung, ein Herz aus Gold und ein Lachen, das ansteckt. Herzlichen Glückwunsch, Björn!",
+  "Geboren an einem Donnerstag, gefeiert an einem Freitag – dein Geburtstag ist der perfekte Start ins Wochenende!",
+  "Wenn das Leben ein Kuchen ist, hast du jetzt 57 Stücke – und die besten kommen noch. Alles Gute!",
+  "Noch drei Jahre bis zur 60 – genieß sie, die späten Fünfziger sind die besten! Happy Birthday!",
+  "Auf einen echten 69er: original, unverwechselbar und durch nichts zu ersetzen. Alles Gute!",
+  "Lieber Björn, heute wird gefeiert – und morgen auch noch. Das hast du dir verdient!",
+  "Am Tag deiner Geburt war die Mondlandung gerade vier Monate her. Heute bist du selbst eine Legende. Alles Gute!",
+  "Möge dein Kaffee heute stark, dein Kuchen groß und deine Laune bestens sein. Happy Birthday!",
+  "Ob 1969 oder heute: Mit dir wird jeder 27. November zum Feiertag. Herzlichen Glückwunsch!",
+  "Alles Gute zum 57., Björn! Du bist der lebende Beweis, dass die späten Sechziger die besten Jahre waren.",
+  "Ein Jahr älter, ein Jahr weiser, ein Jahr mehr Geschichten zu erzählen. Auf dich, Björn!"
 ];
-let qi = Math.floor(Math.random() * quotes.length);
+// gemischter Stapel: erst wenn alle 57 Sprüche dran waren, wird neu gemischt
+let deck = [], qi = -1;
+function nextQ(){
+  if (!deck.length) {
+    deck = quotes.map((_, i) => i).filter(i => i !== qi);
+    for (let i = deck.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
+  }
+  qi = deck.pop();
+}
+nextQ();
+// Karte so hoch wie der längste Spruch, damit die Knöpfe beim Weitertippen nicht springen
+function sizeQ(){
+  const q = $('quote'), cur = q.textContent;
+  q.style.minHeight = '0';
+  let mx = 0;
+  for (const t of quotes) { q.textContent = t; mx = Math.max(mx, q.scrollHeight); }
+  q.textContent = cur; q.style.minHeight = mx + 'px';
+}
 const showQ = () => { $('quote').textContent = quotes[qi]; $('copied').textContent = ''; };
-showQ();
-$('newq').addEventListener('click', () => { qi = (qi + 1 + Math.floor(Math.random() * (quotes.length - 1))) % quotes.length; showQ(); });
+showQ(); sizeQ();
+const qro = new ResizeObserver(() => sizeQ()); qro.observe(document.querySelector('.gc'));
+if (document.fonts) { document.fonts.ready.then(sizeQ); document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', sizeQ); }
+$('newq').addEventListener('click', () => { nextQ(); showQ(); });
 $('copy').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(quotes[qi]); $('copied').textContent = 'Kopiert!'; }
   catch (e) { $('copied').textContent = 'Kopieren ging nicht – einfach markieren.'; }
